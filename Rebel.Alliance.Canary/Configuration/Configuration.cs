@@ -43,15 +43,15 @@ namespace Rebel.Alliance.Canary.Configuration
             services.AddSingleton<IActorStateManager, InMemoryActorStateManager>();
 
             // Register all actor types
-            services.AddTransient<VerifiableCredentialActorBase>();
-            services.AddTransient<CredentialIssuerActorBase>();
-            services.AddTransient<CredentialVerifierActorBase>();
-            services.AddTransient<CredentialHolderActorBase>();
-            services.AddTransient<RevocationManagerActorBase>();
-            services.AddTransient<TrustFrameworkManagerActorBase>();
-            services.AddTransient<VerifiableCredentialAsRootOfTrustActorBase>();
-            services.AddTransient<OIDCClientActorBase>();
-            services.AddTransient<TokenIssuerActorBase>();
+            services.AddTransient<VerifiableCredentialActor>();
+            services.AddTransient<CredentialIssuerActor>();
+            services.AddTransient<CredentialVerifierActor>();
+            services.AddTransient<CredentialHolderActor>();
+            services.AddTransient<RevocationManagerActor>();
+            services.AddTransient<TrustFrameworkManagerActor>();
+            services.AddTransient<VerifiableCredentialAsRootOfTrustActor>();
+            services.AddTransient<OIDCClientActor>();
+            services.AddTransient<TokenIssuerActor>();
 
             // Depending on the configured framework, register the appropriate IActorSystemProvider
             switch (configuration.ActorFramework.ToLowerInvariant())
