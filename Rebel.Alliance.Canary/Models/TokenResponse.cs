@@ -4,6 +4,8 @@
     {
         public string Token { get; set; }
         public DateTime Expiration { get; set; }
+        public string AccessToken { get; set; }
+        public string IdToken { get; set; }
 
         public TokenResponse(string token, DateTime expiration)
         {
