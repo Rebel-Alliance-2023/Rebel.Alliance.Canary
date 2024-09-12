@@ -1,17 +1,20 @@
-﻿using Rebel.Alliance.Canary.Models;
+﻿using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Models;
 
-public class TokenRequestMessage
+public class TokenRequestMessage : IActorMessage
 {
     public VerifiableCredential ClientCredential { get; }
     public string RedirectUri { get; }
     public string ClientId { get; }
-    public string ReplyTo { get; }  // Add ReplyTo property
+    public string ReplyTo { get; }
 
     public TokenRequestMessage(VerifiableCredential clientCredential, string redirectUri, string clientId, string replyTo)
     {
-        ClientCredential = clientCredential ?? throw new ArgumentNullException(nameof(clientCredential));
-        RedirectUri = redirectUri ?? throw new ArgumentNullException(nameof(redirectUri));
-        ClientId = clientId ?? throw new ArgumentNullException(nameof(clientId));
-        ReplyTo = replyTo ?? throw new ArgumentNullException(nameof(replyTo));  // Initialize ReplyTo
+        ClientCredential = clientCredential;
+        RedirectUri = redirectUri;
+        ClientId = clientId;
+        ReplyTo = replyTo;
     }
+
+    public string MessageType => nameof(TokenRequestMessage);
 }

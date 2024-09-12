@@ -23,8 +23,8 @@ namespace Rebel.Alliance.Canary.Messaging
         public async Task<TResult> SendMessageAsync<TActor, TResult>(string actorId, object message) where TActor : IActor
         {
             var envelope = new ActorMessageEnvelope<TActor>(actorId, message);
-            // Using Mediatr to send a message asynchronously to a specific actor and return a result
-            return await _mediator.Send<TResult>((IRequest<TResult>)envelope);
+            var result = await _mediator.Send(envelope);
+            return (TResult)result;
         }
 
         public async Task RegisterHandlerAsync<TMessage>(Func<TMessage, Task> handler)
@@ -42,7 +42,7 @@ namespace Rebel.Alliance.Canary.Messaging
 
     // Supporting classes for Mediatr message envelope and handler registration
 
-    public class ActorMessageEnvelope<TActor> : IRequest where TActor : IActor
+    public class ActorMessageEnvelope<TActor> : IRequest<object> where TActor : IActor
     {
         public string ActorId { get; }
         public object Message { get; }

@@ -1,0 +1,49 @@
+﻿@page "/authentication/login-callback"
+@inject NavigationManager NavigationManager
+@inject IHttpClientFactory HttpClientFactory
+@inject ILogger<LoginCallback> Logger
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var code = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("code");
+
+        if (!string.IsNullOrEmpty(code))
+        {
+            try
+            {
+                var redirectUri = NavigationManager.BaseUri + "authentication/login-callback";
+                var httpClient = HttpClientFactory.CreateClient("BlazorAppTest01.ServerAPI");
+                Logger.LogInformation($"Attempting to exchange code: {code}, redirectUri: {redirectUri}");
+
+                // Use an absolute URI here
+                var absoluteUri = new Uri(NavigationManager.BaseUri + $"api/auth/exchange?code={code}&redirectUri={Uri.EscapeDataString(redirectUri)}");
+                var response = await httpClient.GetFromJsonAsync<TokenResponse>(absoluteUri);
+
+                if (response != null)
+                {
+                    Logger.LogInformation("Token exchange successful");
+                    // Here you would typically store the tokens
+                    // For now, we'll just redirect to the home page
+                    NavigationManager.NavigateTo("/");
+                }
+                else
+                {
+                    Logger.LogError("Token exchange failed: response was null");
+                    NavigationManager.NavigateTo("/login?error=token_exchange_failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Token exchange failed");
+                NavigationManager.NavigateTo("/login?error=token_exchange_failed");
+            }
+        }
+        else
+        {
+            Logger.LogError("No authorization code received");
+            NavigationManager.NavigateTo("/login?error=no_code");
+        }
+    }
+}

@@ -1,0 +1,15 @@
+@page "/protected"
+@attribute [Authorize]
+
+<h3>Protected Page</h3>
+
+<p>This page is only accessible to authenticated users.</p>
+
+<AuthorizeView>
+    <Authorized>
+        <p>Welcome, @context.User.Identity?.Name!</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to view this page.</p>
+    </NotAuthorized>
+</AuthorizeView>

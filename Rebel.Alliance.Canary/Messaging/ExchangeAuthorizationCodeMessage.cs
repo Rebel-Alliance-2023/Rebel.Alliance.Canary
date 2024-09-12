@@ -4,16 +4,17 @@ namespace Rebel.Alliance.Canary.Messaging
 {
     public class ExchangeAuthorizationCodeMessage : IActorMessage
     {
-        public string Code { get; private set; }
-        public string ClientId { get; private set; }
+        public string Code { get; }
+        public string RedirectUri { get; }
+        public string ClientId { get; }
 
-        public ExchangeAuthorizationCodeMessage(string code, string clientId)
+        public ExchangeAuthorizationCodeMessage(string code, string redirectUri, string clientId)
         {
             Code = code;
+            RedirectUri = redirectUri;
             ClientId = clientId;
         }
 
         public string MessageType => nameof(ExchangeAuthorizationCodeMessage);
-
     }
 }

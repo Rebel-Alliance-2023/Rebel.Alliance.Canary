@@ -15,24 +15,26 @@ namespace Rebel.Alliance.Canary.Services
 
         public async Task<string> InitiateAuthenticationAsync(string clientId, string redirectUri)
         {
-            // Send message to OIDCClientActor to initiate authentication flow
-            var oidcClientActor = await _messageBus.SendMessageAsync<OIDCClientActor, string>(clientId, new InitiateAuthenticationMessage(clientId, redirectUri));
-            return oidcClientActor;
+            // Create an InitiateAuthenticationMessage
+            var message = new InitiateAuthenticationMessage(clientId, redirectUri);
+
+            // Send the message to the OIDCClientActor
+            var authorizationCode = await _messageBus.SendMessageAsync<OIDCClientActor, string>(clientId, message);
+
+            // Construct the redirect URL with the authorization code
+            var redirectUrl = $"{redirectUri}?code={authorizationCode}";
+
+            return redirectUrl;
         }
+
 
         public async Task<OidcResponse> ExchangeAuthorizationCodeAsync(string clientId, string code, string redirectUri)
         {
-            // Send message to OIDCClientActor to exchange authorization code for tokens
-            var oidcClientActor = await _messageBus.SendMessageAsync<OIDCClientActor, OidcResponse>(clientId, new ExchangeAuthorizationCodeMessage(code, redirectUri));
-            return oidcClientActor;
+            var message = new ExchangeAuthorizationCodeMessage(code, redirectUri, clientId);
+            return await _messageBus.SendMessageAsync<OIDCClientActor, OidcResponse>(clientId, message);
         }
 
-        public async Task<bool> ValidateTokenAsync(string clientId, string token)
-        {
-            // Send message to OIDCClientActor to validate the token
-            var oidcClientActor = await _messageBus.SendMessageAsync<OIDCClientActor, bool>(clientId, new ValidateTokenMessage(clientId, token));
-            return oidcClientActor;
-        }
+
     }
 
 }

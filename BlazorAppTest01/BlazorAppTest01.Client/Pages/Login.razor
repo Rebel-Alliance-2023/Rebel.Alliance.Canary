@@ -1,0 +1,80 @@
+@page "/login"
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+
+<h3>Login</h3>
+
+<button class="btn btn-primary" @onclick="LoginWithOidc">Login with OIDC</button>
+
+@code {
+    private async Task LoginWithOidc()
+
+    {
+
+        var authorizationEndpoint = Configuration["Oidc:Authority"] + "/connect/authorize";
+
+        var clientId = Configuration["Oidc:ClientId"];
+
+
+
+        if (string.IsNullOrEmpty(clientId))
+
+        {
+
+            Console.WriteLine("ClientId is null or empty");
+
+            return;
+
+        }
+
+
+
+        var redirectUri = NavigationManager.BaseUri + "authentication/login-callback";
+
+        var scope = "openid profile email";
+
+
+
+        var state = Guid.NewGuid().ToString();
+
+        var nonce = Guid.NewGuid().ToString();
+
+
+
+        var authorizationRequest = $"{authorizationEndpoint}?" +
+
+            $"client_id={Uri.EscapeDataString(clientId)}&" +
+
+            $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+
+            $"response_type=code&" +
+
+            $"scope={Uri.EscapeDataString(scope)}&" +
+
+            $"state={Uri.EscapeDataString(state)}&" +
+
+            $"nonce={Uri.EscapeDataString(nonce)}";
+
+
+
+        NavigationManager.NavigateTo(authorizationRequest, forceLoad: true);
+
+    }
+
+
+
+    protected override void OnInitialized()
+
+    {
+
+        foreach (var c in Configuration.AsEnumerable())
+
+        {
+
+            Console.WriteLine($"{c.Key}: {c.Value}");
+
+        }
+
+    }
+
+}

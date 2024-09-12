@@ -11,7 +11,7 @@ namespace Rebel.Alliance.Canary.Abstractions
         Task OnDeactivateAsync();
         void SetActorStateManager(IActorStateManager stateManager);
         void SetMediator(IMediator mediator);
-        Task ReceiveAsync(IActorMessage message);
+        Task<object> ReceiveAsync(IActorMessage message);
     }
 
 
@@ -85,7 +85,7 @@ namespace Rebel.Alliance.Canary.Abstractions
             Mediator = mediator;
         }
 
-        public virtual Task ReceiveAsync(IActorMessage message)
+        public virtual async Task<object> ReceiveAsync(IActorMessage message)
         {
             // Default implementation for handling messages
             return Task.CompletedTask;
