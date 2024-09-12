@@ -4,16 +4,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Rebel.Alliance.Canary.Services;
-using Rebel.Alliance.Canary.Actors;
-using Rebel.Alliance.Canary.Messaging;
 using Rebel.Alliance.Canary.Abstractions;
 using System.Text;
-using Rebel.Alliance.Canary.SystemProviders;
 using Microsoft.Extensions.DependencyInjection;
 using MediatR;
 using System.Reflection;
 using BlazorCanary.Client;
 using Microsoft.AspNetCore.Components.Authorization;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders;
+using Rebel.Alliance.Canary.InMemoryActorFramework;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
+using Rebel.Alliance.Canary.Abstractions.Actors;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 

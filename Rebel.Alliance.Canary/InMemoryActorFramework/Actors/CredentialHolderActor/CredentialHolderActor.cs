@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
 using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Abstractions.Actors;
 using Rebel.Alliance.Canary.Models;
 using Rebel.Alliance.Canary.Services;
 
-namespace Rebel.Alliance.Canary.Actors
+namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialHolderActor
 {
-    public interface ICredentialHolderActor : IActor
-    {
-        Task StoreCredentialAsync(VerifiableCredential credential);
-        Task<VerifiableCredential> PresentCredentialAsync(string credentialId);
-        Task RenewCredentialAsync(string credentialId);
-    }
 
     public class CredentialHolderActor : ActorBase, ICredentialHolderActor
     {

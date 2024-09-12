@@ -1,6 +1,10 @@
-﻿using Rebel.Alliance.Canary.Actors;
+﻿using Rebel.Alliance.Canary.InMemoryActorFramework;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 using Rebel.Alliance.Canary.Messaging;
-using Rebel.Alliance.Canary.Models; 
+using Rebel.Alliance.Canary.Models;
 
 
 namespace Rebel.Alliance.Canary.Services

@@ -1,4 +1,4 @@
-﻿namespace Rebel.Alliance.Canary.SystemProviders
+﻿namespace Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders
 {
     using System;
     using Rebel.Alliance.Canary.Abstractions;

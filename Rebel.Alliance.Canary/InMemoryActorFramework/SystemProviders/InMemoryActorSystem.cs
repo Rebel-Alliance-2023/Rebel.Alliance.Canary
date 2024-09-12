@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Rebel.Alliance.Canary.Abstractions;
 
-namespace Rebel.Alliance.Canary.SystemProviders
+namespace Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders
 {
     public class InMemoryActorSystem : IActorSystem
     {

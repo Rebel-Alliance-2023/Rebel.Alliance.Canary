@@ -1,21 +1,37 @@
-﻿namespace Rebel.Alliance.Canary.Models;
-public class VerifiableCredential
+﻿using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
+using System;
+using System.Collections.Generic;
+
+namespace Rebel.Alliance.Canary.Models
 {
-    public string? Id { get; set; }  // The unique identifier for the credential
-    public string Issuer { get; set; }  // The entity that issued the credential
-    public string Subject { get; set; }  // The subject (holder) of the credential
-    public DateTime IssuanceDate { get; set; }  // The date the credential was issued
-    public DateTime ExpirationDate { get; set; }  // The date the credential expires
-    public Dictionary<string, string> Claims { get; set; }  // Claims contained in the credential (e.g., name, role, etc.)
-    public Proof Proof { get; set; }  // The cryptographic proof of the credential (signature, etc.)
-
-    public VerifiableCredential()
+    public class VerifiableCredential
     {
-        Claims = new Dictionary<string, string>();
-        Proof = new Proof();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Issuer { get; set; }
+        public string Subject { get; set; }
+        public DateTime IssuanceDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
+        public Dictionary<string, string> Claims { get; set; }
+        public Proof Proof { get; set; }
+        public string? ParentCredentialId { get; set; }
+
+        public VerifiableCredential()
+        {
+            Claims = new Dictionary<string, string>();
+            Proof = new Proof();
+            IssuanceDate = DateTime.UtcNow;
+        }
+
+        public bool IsExpired => DateTime.UtcNow > ExpirationDate;
+
+        public bool IsValid()
+        {
+            return !string.IsNullOrEmpty(Issuer) &&
+                   !string.IsNullOrEmpty(Subject) &&
+                   IssuanceDate != default &&
+                   ExpirationDate > IssuanceDate &&
+                   Proof != null &&
+                   Proof.IsValid();
+        }
     }
-
-    public bool IsExpired => DateTime.UtcNow > ExpirationDate;  // Property to check if the credential is expired
-
-    public string? ParentCredentialId { get; internal set; }
 }

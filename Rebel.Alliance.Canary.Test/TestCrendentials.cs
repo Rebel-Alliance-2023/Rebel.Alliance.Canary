@@ -5,12 +5,11 @@ using Xunit;
 using Rebel.Alliance.Canary.Models;
 using Rebel.Alliance.Canary.Services;
 using Rebel.Alliance.Canary.TestUtilities;
-using Rebel.Alliance.Canary.Actors;
 using MediatR;
-using Rebel.Alliance.Canary.Messaging;
-using Rebel.Alliance.Canary.SystemProviders;
+using Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders;
 using Microsoft.Extensions.DependencyInjection;
-using Rebel.Alliance.Canary.Messaging.Handlers;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework;
 
 namespace Rebel.Alliance.Canary.Tests
 {

@@ -3,7 +3,7 @@ using Rebel.Alliance.Canary.Abstractions;
 using System;
 using System.Threading.Tasks;
 
-namespace Rebel.Alliance.Canary.Messaging
+namespace Rebel.Alliance.Canary.InMemoryActorFramework
 {
     public class InMemoryActorMessageBus : IActorMessageBus
     {

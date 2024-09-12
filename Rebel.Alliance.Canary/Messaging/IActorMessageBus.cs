@@ -1,6 +1,6 @@
 using Rebel.Alliance.Canary.Abstractions;
 
-namespace Rebel.Alliance.Canary.Messaging
+namespace Rebel.Alliance.Canary.InMemoryActorFramework
 {
     public interface IActorMessageBus
     {

@@ -1,19 +1,15 @@
 using MediatR;
-using Rebel.Alliance.Canary.Abstractions;
 using Rebel.Alliance.Canary.Messaging;
 using Rebel.Alliance.Canary.Models;
 using Rebel.Alliance.Canary.Services;
 using System;
 using System.Threading.Tasks;
+using Rebel.Alliance.Canary.InMemoryActorFramework;
+using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Abstractions.Actors;
 
-namespace Rebel.Alliance.Canary.Actors
+namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
 {
-    public interface IOIDCClientActor : IActor
-    {
-        Task<string> InitiateAuthenticationAsync(string redirectUri);
-        Task<OidcResponse> ExchangeAuthorizationCodeAsync(string code, string redirectUri, string clientId);
-        Task<bool> ValidateTokenAsync(string token);
-    }
 
     public class OIDCClientActor : ActorBase, IOIDCClientActor
     {
@@ -68,8 +64,8 @@ namespace Rebel.Alliance.Canary.Actors
                     throw new InvalidOperationException("Invalid authorization code.");
                 }
 
-                var tokenRequest = new TokenRequestMessage(_clientCredential, redirectUri, clientId, this.Id);
-                var oidcResponse = await _messageBus.SendMessageAsync<TokenIssuerActor, OidcResponse>("TokenIssuer", tokenRequest);
+                var tokenRequest = new TokenRequestMessage(_clientCredential, redirectUri, clientId, Id);
+                var oidcResponse = await _messageBus.SendMessageAsync<ITokenIssuerActor, OidcResponse>("TokenIssuer", tokenRequest);
 
                 Console.WriteLine($"Authorization code exchanged for OIDCClientActor {Id}");
                 return oidcResponse;
@@ -86,7 +82,7 @@ namespace Rebel.Alliance.Canary.Actors
             try
             {
                 var validationMessage = new TokenValidationMessage(token, "expectedIssuer", "expectedAudience", "clientId", 60);
-                var isValid = await _messageBus.SendMessageAsync<CredentialVerifierActor, bool>("CredentialVerifier", validationMessage);
+                var isValid = await _messageBus.SendMessageAsync<ICredentialVerifierActor, bool>("CredentialVerifier", validationMessage);
                 Console.WriteLine($"Token validation result for OIDCClientActor {Id}: {isValid}");
                 return isValid;
             }

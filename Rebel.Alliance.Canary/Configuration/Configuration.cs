@@ -2,8 +2,16 @@ using System;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
 using Rebel.Alliance.Canary.Abstractions;
-using Rebel.Alliance.Canary.Actors;
-using Rebel.Alliance.Canary.SystemProviders;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialHolderActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialIssuerActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TrustFrameworkManagerActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.VerifiableCredentialActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.VerifiableCredentialAsRootOfTrustActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders;
 
 namespace Rebel.Alliance.Canary.Configuration
 {

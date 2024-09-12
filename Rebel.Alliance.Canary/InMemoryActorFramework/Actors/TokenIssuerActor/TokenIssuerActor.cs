@@ -4,14 +4,9 @@ using Rebel.Alliance.Canary.Models;
 using Rebel.Alliance.Canary.Services;
 using System.Text.Json;
 using System.Text;
+using Rebel.Alliance.Canary.Abstractions.Actors;
 
-namespace Rebel.Alliance.Canary.Actors;
-
-public interface ITokenIssuerActor : IActor
-{
-    Task<TokenResponse> IssueTokenAsync(TokenRequestMessage request);
-    Task HandleTokenRequestAsync(TokenRequestMessage request);
-}
+namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 
 public class TokenIssuerActor : ActorBase, ITokenIssuerActor
 {
@@ -46,7 +41,7 @@ public class TokenIssuerActor : ActorBase, ITokenIssuerActor
         }
     }
 
-    public async Task<TokenResponse> IssueTokenAsync(TokenRequestMessage request) 
+    public async Task<TokenResponse> IssueTokenAsync(TokenRequestMessage request)
     {
         try
         {
@@ -59,7 +54,7 @@ public class TokenIssuerActor : ActorBase, ITokenIssuerActor
                 Claims = request.ClientCredential.Claims
             };
 
-            var header = new Rebel.Alliance.Canary.Models.JwtHeader
+            var header = new JwtHeader
             {
                 Alg = "RS256",
                 Typ = "JWT",

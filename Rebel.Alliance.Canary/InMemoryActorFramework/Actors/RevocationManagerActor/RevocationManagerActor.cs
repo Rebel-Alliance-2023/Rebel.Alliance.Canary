@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Rebel.Alliance.Canary.Abstractions;
 using MediatR;
+using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Abstractions.Actors;
 
-namespace Rebel.Alliance.Canary.Actors
+namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor
 {
-    public interface IRevocationManagerActor : IActor
-    {
-        Task RevokeCredentialAsync(string credentialId);
-        Task<bool> IsCredentialRevokedAsync(string credentialId);
-        Task NotifyRevocationAsync(string credentialId);
-        Task<bool> ValidateRevocationAsync(string credentialId); 
-    }
 
     public class RevocationManagerActor : ActorBase, IRevocationManagerActor
     {

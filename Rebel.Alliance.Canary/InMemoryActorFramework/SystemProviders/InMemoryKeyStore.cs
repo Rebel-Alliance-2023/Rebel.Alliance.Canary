@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Rebel.Alliance.Canary.Abstractions;
 
-namespace Rebel.Alliance.Canary.SystemProviders
+namespace Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders
 {
     public class InMemoryKeyStore : IKeyStore
     {
