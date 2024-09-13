@@ -1,25 +1,31 @@
-using MediatR;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rebel.Alliance.Canary.OIDC.Services;
 using Rebel.Alliance.Canary.VerifiableCredentials;
 using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
+using Rebel.Alliance.Canary.OIDC.Models;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
 {
-
     public class OIDCClientActor : ActorBase, IOIDCClientActor
     {
         private readonly IActorStateManager _stateManager;
         private readonly IActorMessageBus _messageBus;
+        private readonly ILogger<OIDCClientActor> _logger;
         private VerifiableCredential _clientCredential;
 
-        public OIDCClientActor(string id, IActorStateManager stateManager, IActorMessageBus messageBus) : base(id)
+        public OIDCClientActor(
+            string id,
+            IActorStateManager stateManager,
+            IActorMessageBus messageBus,
+            ILogger<OIDCClientActor> logger) : base(id)
         {
             _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
             _messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public override async Task OnActivateAsync()
@@ -28,11 +34,11 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
             {
                 _clientCredential = await _stateManager.GetStateAsync<VerifiableCredential>("ClientCredential")
                                    ?? new VerifiableCredential();
-                Console.WriteLine($"OIDCClientActor {Id} activated. Client credential loaded.");
+                _logger.LogInformation($"OIDCClientActor {Id} activated. Client credential loaded.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error activating OIDCClientActor: {ex.Message}");
+                _logger.LogError(ex, $"Error activating OIDCClientActor: {Id}");
                 throw;
             }
         }
@@ -43,12 +49,12 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
             {
                 var authorizationCode = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
                 await _stateManager.SetStateAsync("AuthorizationCode", authorizationCode);
-                Console.WriteLine($"Authentication initiated for OIDCClientActor {Id}");
+                _logger.LogInformation($"Authentication initiated for OIDCClientActor {Id}");
                 return authorizationCode;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error initiating authentication: {ex.Message}");
+                _logger.LogError(ex, $"Error initiating authentication for OIDCClientActor {Id}");
                 throw;
             }
         }
@@ -66,28 +72,29 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
                 var tokenRequest = new TokenRequestMessage(_clientCredential, redirectUri, clientId, Id);
                 var oidcResponse = await _messageBus.SendMessageAsync<ITokenIssuerActor, OidcResponse>("TokenIssuer", tokenRequest);
 
-                Console.WriteLine($"Authorization code exchanged for OIDCClientActor {Id}");
+                _logger.LogInformation($"Authorization code exchanged for OIDCClientActor {Id}");
                 return oidcResponse;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error exchanging authorization code: {ex.Message}");
+                _logger.LogError(ex, $"Error exchanging authorization code for OIDCClientActor {Id}");
                 throw;
             }
         }
+
 
         public async Task<bool> ValidateTokenAsync(string token)
         {
             try
             {
-                var validationMessage = new TokenValidationMessage(token, "expectedIssuer", "expectedAudience", "clientId", 60);
+                var validationMessage = new ValidateTokenMessage(token);
                 var isValid = await _messageBus.SendMessageAsync<ICredentialVerifierActor, bool>("CredentialVerifier", validationMessage);
-                Console.WriteLine($"Token validation result for OIDCClientActor {Id}: {isValid}");
+                _logger.LogInformation($"Token validation result for OIDCClientActor {Id}: {isValid}");
                 return isValid;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error validating token: {ex.Message}");
+                _logger.LogError(ex, $"Error validating token for OIDCClientActor {Id}");
                 throw;
             }
         }
@@ -102,7 +109,7 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
                         return await InitiateAuthenticationAsync(initAuthMessage.RedirectUri);
                     case ExchangeAuthorizationCodeMessage exchangeCodeMessage:
                         return await ExchangeAuthorizationCodeAsync(exchangeCodeMessage.Code, exchangeCodeMessage.RedirectUri, exchangeCodeMessage.ClientId);
-                    case TokenValidationMessage validationMessage:
+                    case ValidateTokenMessage validationMessage:
                         return await ValidateTokenAsync(validationMessage.Token);
                     default:
                         throw new NotSupportedException($"Message type {message.GetType().Name} is not supported.");
@@ -110,9 +117,10 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error processing message in OIDCClientActor: {ex.Message}");
+                _logger.LogError(ex, $"Error processing message in OIDCClientActor: {Id}");
                 throw;
             }
         }
+
     }
 }

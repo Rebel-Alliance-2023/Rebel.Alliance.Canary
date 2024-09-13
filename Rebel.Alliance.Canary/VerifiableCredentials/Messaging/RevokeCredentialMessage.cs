@@ -1,4 +1,4 @@
-﻿using Rebel.Alliance.Canary.Actor.Interfaces;
+using Rebel.Alliance.Canary.Actor.Interfaces;
 
 namespace Rebel.Alliance.Canary.VerifiableCredentials.Messaging
 {
@@ -8,7 +8,7 @@ namespace Rebel.Alliance.Canary.VerifiableCredentials.Messaging
 
         public RevokeCredentialMessage(string credentialId)
         {
-            CredentialId = credentialId;
+            CredentialId = credentialId ?? throw new System.ArgumentNullException(nameof(credentialId));
         }
 
         public string MessageType => nameof(RevokeCredentialMessage);

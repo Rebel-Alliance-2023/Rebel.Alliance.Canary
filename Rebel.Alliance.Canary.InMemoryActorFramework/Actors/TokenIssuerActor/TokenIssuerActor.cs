@@ -1,100 +1,117 @@
-using Rebel.Alliance.Canary.Models;
+using System;
 using System.Text.Json;
 using System.Text;
+using System.Threading.Tasks;
 using Rebel.Alliance.Canary.OIDC.Models;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
 
-namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
-
-public class TokenIssuerActor : ActorBase, ITokenIssuerActor
+namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor
 {
-    private readonly ICryptoService _cryptoService;
-    private readonly IActorMessageBus _messageBus;
-    private readonly IActorStateManager _stateManager;
-
-    public TokenIssuerActor(ICryptoService cryptoService, IActorMessageBus messageBus, IActorStateManager stateManager, string id)
-        : base(id)
+    public class TokenIssuerActor : ActorBase, ITokenIssuerActor
     {
-        _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
-        _messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
-        _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
-    }
+        private readonly ICryptoService _cryptoService;
+        private readonly IActorMessageBus _messageBus;
+        private readonly IActorStateManager _stateManager;
 
-    public override async Task<object> ReceiveAsync(IActorMessage message)
-    {
-        try
+        public TokenIssuerActor(ICryptoService cryptoService, IActorMessageBus messageBus, IActorStateManager stateManager, string id)
+            : base(id)
         {
-            switch (message)
+            _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
+            _messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
+            _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
+        }
+
+        public override async Task<object> ReceiveAsync(IActorMessage message)
+        {
+            try
             {
-                case TokenRequestMessage tokenRequest:
-                    return await IssueTokenAsync(tokenRequest);
-                default:
-                    throw new NotSupportedException($"Message type {message.GetType().Name} is not supported.");
+                switch (message)
+                {
+                    case TokenRequestMessage tokenRequest:
+                        return await IssueTokenAsync(tokenRequest);
+                    default:
+                        throw new NotSupportedException($"Message type {message.GetType().Name} is not supported.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error processing message in TokenIssuerActor: {ex.Message}");
+                throw;
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error processing message in TokenIssuerActor: {ex.Message}");
-            throw;
-        }
-    }
 
-    public async Task<TokenResponse> IssueTokenAsync(TokenRequestMessage request)
-    {
-        try
+        public async Task<TokenResponse> IssueTokenAsync(TokenRequestMessage request)
         {
-            var payload = new TokenPayload
+            try
             {
-                Issuer = request.ClientId,
-                Subject = request.ClientCredential.Subject,
-                IssuedAt = DateTime.UtcNow,
-                Expiration = DateTime.UtcNow.AddMinutes(30),
-                Claims = request.ClientCredential.Claims
-            };
+                var issuedAt = DateTime.UtcNow;
+                var expiration = issuedAt.AddMinutes(30);
 
-            var header = new JwtHeader
+                var accessTokenPayload = new TokenPayload
+                {
+                    Issuer = request.ClientId,
+                    Subject = request.ClientCredential.Subject,
+                    IssuedAt = issuedAt,
+                    Expiration = expiration,
+                    Claims = request.ClientCredential.Claims
+                };
+
+                var idTokenPayload = new TokenPayload
+                {
+                    Issuer = request.ClientId,
+                    Subject = request.ClientCredential.Subject,
+                    IssuedAt = issuedAt,
+                    Expiration = expiration,
+                    Claims = request.ClientCredential.Claims
+                };
+
+                var header = new JwtHeader
+                {
+                    Alg = "RS256",
+                    Typ = "JWT",
+                    Kid = request.ClientId
+                };
+
+                var headerJson = JsonSerializer.Serialize(header);
+                var accessTokenPayloadJson = JsonSerializer.Serialize(accessTokenPayload);
+                var idTokenPayloadJson = JsonSerializer.Serialize(idTokenPayload);
+
+                var (accessTokenSignature, _) = await _cryptoService.SignDataUsingIdentifierAsync(request.ClientId, $"{headerJson}.{accessTokenPayloadJson}");
+                var (idTokenSignature, _) = await _cryptoService.SignDataUsingIdentifierAsync(request.ClientId, $"{headerJson}.{idTokenPayloadJson}");
+
+                var accessToken = $"{Convert.ToBase64String(Encoding.UTF8.GetBytes(headerJson))}.{Convert.ToBase64String(Encoding.UTF8.GetBytes(accessTokenPayloadJson))}.{Convert.ToBase64String(accessTokenSignature)}";
+                var idToken = $"{Convert.ToBase64String(Encoding.UTF8.GetBytes(headerJson))}.{Convert.ToBase64String(Encoding.UTF8.GetBytes(idTokenPayloadJson))}.{Convert.ToBase64String(idTokenSignature)}";
+
+                return new TokenResponse(accessToken, idToken, expiration);
+            }
+            catch (Exception ex)
             {
-                Alg = "RS256",
-                Typ = "JWT",
-                Kid = request.ClientId
-            };
-
-            var headerJson = JsonSerializer.Serialize(header);
-            var payloadJson = JsonSerializer.Serialize(payload);
-
-            var (signature, publicKey) = await _cryptoService.SignDataUsingIdentifierAsync(request.ClientId, $"{headerJson}.{payloadJson}");
-
-            var token = $"{Convert.ToBase64String(Encoding.UTF8.GetBytes(headerJson))}.{Convert.ToBase64String(Encoding.UTF8.GetBytes(payloadJson))}.{Convert.ToBase64String(signature)}";
-
-            return new TokenResponse(token, payload.Expiration);
+                Console.WriteLine($"Error issuing token: {ex.Message}");
+                throw;
+            }
         }
-        catch (Exception ex)
+
+        public async Task HandleTokenRequestAsync(TokenRequestMessage request)
         {
-            Console.WriteLine($"Error issuing token: {ex.Message}");
-            throw;
+            try
+            {
+                var tokenResponse = await IssueTokenAsync(request);
+                await _messageBus.SendMessageAsync<ITokenIssuerActor, TokenResponse>(request.ReplyTo, tokenResponse);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error handling token request: {ex.Message}");
+                throw;
+            }
         }
-    }
 
-    public async Task HandleTokenRequestAsync(TokenRequestMessage request)
-    {
-        try
+        public override Task OnActivateAsync()
         {
-            var tokenResponse = await IssueTokenAsync(request);
-            await _messageBus.SendMessageAsync<ITokenIssuerActor, TokenResponse>(request.ReplyTo, tokenResponse);
+            Console.WriteLine($"TokenIssuerActor {Id} activated.");
+            return Task.CompletedTask;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error handling token request: {ex.Message}");
-            throw;
-        }
-    }
-
-    public override Task OnActivateAsync()
-    {
-        Console.WriteLine($"TokenIssuerActor {Id} activated.");
-        return Task.CompletedTask;
     }
 }

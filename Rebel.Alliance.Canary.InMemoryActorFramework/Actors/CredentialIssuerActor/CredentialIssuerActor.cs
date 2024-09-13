@@ -1,66 +1,71 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediatR;
+using Microsoft.Extensions.Logging;
 using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
 using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.VerifiableCredentials;
+using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialIssuerActor
 {
-
     public class CredentialIssuerActor : ActorBase, ICredentialIssuerActor
     {
-        private readonly IMediator _mediator;
-        private readonly IActorStateManager _stateManager;
-        private readonly ITrustFrameworkManagerActor _trustFrameworkManager;
         private readonly ICryptoService _cryptoService;
+        private readonly ILogger<CredentialIssuerActor> _logger;
+        private readonly ITrustFrameworkManagerActor _trustFrameworkManager;
 
-        public CredentialIssuerActor(string id, IMediator mediator, IActorStateManager stateManager, ITrustFrameworkManagerActor trustFrameworkManager, ICryptoService cryptoService)
-            : base(id)
+        public CredentialIssuerActor(
+            string id,
+            ICryptoService cryptoService,
+            ILogger<CredentialIssuerActor> logger,
+            ITrustFrameworkManagerActor trustFrameworkManager) : base(id)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
-            _trustFrameworkManager = trustFrameworkManager ?? throw new ArgumentNullException(nameof(trustFrameworkManager));
             _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _trustFrameworkManager = trustFrameworkManager ?? throw new ArgumentNullException(nameof(trustFrameworkManager));
         }
 
-        public override async Task OnActivateAsync()
+        public override async Task<object> ReceiveAsync(IActorMessage message)
         {
-            try
+            return message switch
             {
-                Console.WriteLine($"Activating CredentialIssuerActor with ID: {Id}");
-                await base.OnActivateAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error activating CredentialIssuerActor: {ex.Message}");
-                throw;
-            }
+                IssueCredentialMessage issueMsg => await IssueCredentialAsync(issueMsg.IssuerId, issueMsg.SubjectId, issueMsg.Claims),
+                _ => throw new NotSupportedException($"Message type {message.GetType().Name} is not supported.")
+            };
         }
 
         public async Task<VerifiableCredential> IssueCredentialAsync(string issuerId, string subject, Dictionary<string, string> claims)
         {
-            if (!await ValidateIssuerAsync(issuerId))
+            try
             {
-                throw new InvalidOperationException("Issuer is not trusted");
+                if (!await ValidateIssuerAsync(issuerId))
+                {
+                    throw new InvalidOperationException("Issuer is not trusted");
+                }
+
+                var credential = new VerifiableCredential
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Issuer = issuerId,
+                    Subject = subject,
+                    IssuanceDate = DateTime.UtcNow,
+                    ExpirationDate = DateTime.UtcNow.AddYears(1),
+                    Claims = claims
+                };
+
+                await SignCredentialAsync(credential);
+
+                _logger.LogInformation($"Credential issued: {credential.Id}");
+                return credential;
             }
-
-            var credential = new VerifiableCredential
+            catch (Exception ex)
             {
-                Issuer = issuerId,
-                Subject = subject,
-                IssuanceDate = DateTime.UtcNow,
-                ExpirationDate = DateTime.UtcNow.AddYears(1), // Set a default expiration
-                Claims = claims
-            };
-
-            await SignCredentialAsync(credential);
-
-            Console.WriteLine($"Credential issued: {credential.Id}");
-            return credential;
+                _logger.LogError(ex, $"Error issuing credential for issuer {issuerId}");
+                throw;
+            }
         }
 
         private async Task SignCredentialAsync(VerifiableCredential credential)
@@ -86,7 +91,7 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialIssuerAc
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error validating issuer: {ex.Message}");
+                _logger.LogError(ex, $"Error validating issuer: {issuerId}");
                 throw;
             }
         }

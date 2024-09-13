@@ -79,12 +79,12 @@ builder.Services.AddSingleton<DecentralizedOIDCProvider>();
 builder.Services.AddSingleton<OidcProviderService>();
 builder.Services.AddSingleton<IKeyStore, InMemoryKeyStore>();
 
-// Register actors
 builder.Services.AddTransient<OIDCClientActor>(sp =>
     new OIDCClientActor(
         Guid.NewGuid().ToString(),
         sp.GetRequiredService<IActorStateManager>(),
-        sp.GetRequiredService<IActorMessageBus>()
+        sp.GetRequiredService<IActorMessageBus>(),
+        sp.GetRequiredService<ILogger<OIDCClientActor>>() // Added logger parameter
     )
 );
 
@@ -97,13 +97,13 @@ builder.Services.AddTransient<TokenIssuerActor>(sp =>
     )
 );
 
-builder.Services.AddTransient<CredentialVerifierActor>(sp =>
-    new CredentialVerifierActor(
-        Guid.NewGuid().ToString(),
-        sp.GetRequiredService<ICryptoService>(),
-        sp.GetRequiredService<IRevocationManagerActor>()
-    )
-);
+//builder.Services.AddTransient<CredentialVerifierActor>(sp =>
+//    new CredentialVerifierActor(
+//        Guid.NewGuid().ToString(),
+//        sp.GetRequiredService<ICryptoService>(),
+//        sp.GetRequiredService<IRevocationManagerActor>()
+//    )
+//);
 
 // Add other actors as needed
 

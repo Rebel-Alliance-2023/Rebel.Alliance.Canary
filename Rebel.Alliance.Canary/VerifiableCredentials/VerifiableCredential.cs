@@ -1,4 +1,4 @@
-﻿using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
+using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
 using System;
 using System.Collections.Generic;
 
@@ -14,6 +14,11 @@ namespace Rebel.Alliance.Canary.VerifiableCredentials
         public Dictionary<string, string> Claims { get; set; }
         public Proof Proof { get; set; }
         public string? ParentCredentialId { get; set; }
+
+        // OIDC-specific properties
+        public string Authority { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
 
         public VerifiableCredential()
         {

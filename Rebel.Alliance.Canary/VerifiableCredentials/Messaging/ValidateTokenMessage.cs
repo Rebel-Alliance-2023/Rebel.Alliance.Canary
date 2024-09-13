@@ -1,13 +1,16 @@
 using Rebel.Alliance.Canary.Actor.Interfaces;
-public class ValidateTokenMessage : IActorMessage
+
+namespace Rebel.Alliance.Canary.VerifiableCredentials.Messaging
 {
-    public string Token { get; }
-
-    public ValidateTokenMessage(string token)
+    public class ValidateTokenMessage : IActorMessage
     {
-        Token = token;
+        public string Token { get; }
+
+        public ValidateTokenMessage(string token)
+        {
+            Token = token ?? throw new System.ArgumentNullException(nameof(token));
+        }
+
+        public string MessageType => nameof(ValidateTokenMessage);
     }
-
-    public string MessageType => nameof(ValidateTokenMessage);
 }
-

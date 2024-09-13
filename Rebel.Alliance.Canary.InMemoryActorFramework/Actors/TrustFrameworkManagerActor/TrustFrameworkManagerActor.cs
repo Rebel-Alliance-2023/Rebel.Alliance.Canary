@@ -1,44 +1,65 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediatR;
+using Microsoft.Extensions.Logging;
 using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
+using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TrustFrameworkManagerActor
 {
     public class TrustFrameworkManagerActor : ActorBase, ITrustFrameworkManagerActor
     {
-        private readonly IMediator _mediator;
+        private readonly ILogger<TrustFrameworkManagerActor> _logger;
         private readonly IActorStateManager _stateManager;
         private readonly HashSet<string> _trustedIssuers = new HashSet<string>();
         private readonly HashSet<string> _revokedIssuers = new HashSet<string>();
 
-        public TrustFrameworkManagerActor(string id, IMediator mediator, IActorStateManager stateManager)
-            : base(id)
+        public TrustFrameworkManagerActor(
+            string id,
+            ILogger<TrustFrameworkManagerActor> logger,
+            IActorStateManager stateManager) : base(id)
         {
-            _mediator = mediator;
-            _stateManager = stateManager;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
         }
 
         public override async Task OnActivateAsync()
         {
-            Console.WriteLine($"Activating TrustFrameworkManagerActor with ID: {Id}");
+            _logger.LogInformation($"Activating TrustFrameworkManagerActor with ID: {Id}");
             await base.OnActivateAsync();
+            await LoadStateAsync();
+        }
+
+        public override async Task<object> ReceiveAsync(IActorMessage message)
+        {
+            switch (message)
+            {
+                case RegisterIssuerMessage registerMsg:
+                    return await RegisterIssuerAsync(registerMsg.IssuerDid, registerMsg.PublicKey);
+                case CertifyIssuerMessage certifyMsg:
+                    return await CertifyIssuerAsync(certifyMsg.IssuerDid);
+                case RevokeIssuerMessage revokeMsg:
+                    return await RevokeIssuerAsync(revokeMsg.IssuerDid);
+                case IsTrustedIssuerMessage trustedMsg:
+                    return await IsTrustedIssuerAsync(trustedMsg.IssuerDid);
+                default:
+                    throw new NotSupportedException($"Message type {message.GetType().Name} is not supported.");
+            }
         }
 
         public async Task<bool> RegisterIssuerAsync(string issuerDid, string publicKey)
         {
             if (_trustedIssuers.Contains(issuerDid) || _revokedIssuers.Contains(issuerDid))
             {
-                Console.WriteLine($"Issuer already registered or revoked: {issuerDid}");
+                _logger.LogWarning($"Issuer already registered or revoked: {issuerDid}");
                 return false;
             }
 
             _trustedIssuers.Add(issuerDid);
-            await _stateManager.SetStateAsync("TrustedIssuers", _trustedIssuers);
+            await SaveStateAsync();
 
-            Console.WriteLine($"Issuer registered: {issuerDid}");
+            _logger.LogInformation($"Issuer registered: {issuerDid}");
             return true;
         }
 
@@ -46,12 +67,13 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TrustFrameworkMana
         {
             if (!_trustedIssuers.Contains(issuerDid))
             {
-                Console.WriteLine($"Issuer not found: {issuerDid}");
+                _logger.LogWarning($"Issuer not found: {issuerDid}");
                 return false;
             }
 
-            // Mark the issuer as certified (could involve additional state management)
-            Console.WriteLine($"Issuer certified: {issuerDid}");
+            // Here you might add additional logic for certification if needed
+
+            _logger.LogInformation($"Issuer certified: {issuerDid}");
             return true;
         }
 
@@ -59,29 +81,41 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TrustFrameworkMana
         {
             if (!_trustedIssuers.Contains(issuerDid))
             {
-                Console.WriteLine($"Issuer not found: {issuerDid}");
+                _logger.LogWarning($"Issuer not found: {issuerDid}");
                 return false;
             }
 
             _trustedIssuers.Remove(issuerDid);
             _revokedIssuers.Add(issuerDid);
-            await _stateManager.SetStateAsync("TrustedIssuers", _trustedIssuers);
-            await _stateManager.SetStateAsync("RevokedIssuers", _revokedIssuers);
+            await SaveStateAsync();
 
-            Console.WriteLine($"Issuer revoked: {issuerDid}");
+            _logger.LogInformation($"Issuer revoked: {issuerDid}");
             return true;
         }
 
         public async Task<bool> IsTrustedIssuerAsync(string issuerDid)
         {
-            if (_trustedIssuers.Contains(issuerDid))
-            {
-                Console.WriteLine($"Issuer is trusted: {issuerDid}");
-                return true;
-            }
+            var isTrusted = _trustedIssuers.Contains(issuerDid);
+            _logger.LogInformation($"Issuer trust status checked: {issuerDid}, Is trusted: {isTrusted}");
+            return isTrusted;
+        }
 
-            Console.WriteLine($"Issuer is not trusted: {issuerDid}");
-            return false;
+        private async Task LoadStateAsync()
+        {
+            var trustedIssuers = await _stateManager.TryGetStateAsync<HashSet<string>>("TrustedIssuers");
+            var revokedIssuers = await _stateManager.TryGetStateAsync<HashSet<string>>("RevokedIssuers");
+
+            if (trustedIssuers != null)
+                _trustedIssuers.UnionWith(trustedIssuers);
+
+            if (revokedIssuers != null)
+                _revokedIssuers.UnionWith(revokedIssuers);
+        }
+
+        private async Task SaveStateAsync()
+        {
+            await _stateManager.SetStateAsync("TrustedIssuers", _trustedIssuers);
+            await _stateManager.SetStateAsync("RevokedIssuers", _revokedIssuers);
         }
     }
 }
