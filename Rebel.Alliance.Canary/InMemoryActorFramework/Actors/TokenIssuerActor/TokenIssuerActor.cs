@@ -1,10 +1,10 @@
 using Rebel.Alliance.Canary.Abstractions;
-using Rebel.Alliance.Canary.Messaging;
 using Rebel.Alliance.Canary.Models;
-using Rebel.Alliance.Canary.Services;
 using System.Text.Json;
 using System.Text;
 using Rebel.Alliance.Canary.Abstractions.Actors;
+using Rebel.Alliance.Canary.OIDC.Models;
+using Rebel.Alliance.Canary.Security;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 

@@ -8,9 +8,10 @@ using System.Text; // For Encoding
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration; // For configuration management
 using Microsoft.IdentityModel.Tokens; // For security tokens and key management
-using Rebel.Alliance.Canary.Abstractions; // For interface and model definitions
+using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Security;
 
-namespace Rebel.Alliance.Canary.Services
+namespace Rebel.Alliance.Canary.OIDC.Services
 {
     public class OidcProviderService
     {

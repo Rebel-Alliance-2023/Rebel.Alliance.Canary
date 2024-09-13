@@ -1,4 +1,4 @@
-﻿using Rebel.Alliance.Canary.Models;
+﻿using Rebel.Alliance.Canary.VerifiableCredentials;
 
 public class AuthenticationRequest
 {

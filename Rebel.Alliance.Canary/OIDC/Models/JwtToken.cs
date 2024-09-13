@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 
-namespace Rebel.Alliance.Canary.Models
+namespace Rebel.Alliance.Canary.OIDC.Models
 {
     public class JwtToken
     {

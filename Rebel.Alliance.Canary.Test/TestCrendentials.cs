@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Rebel.Alliance.Canary.Models;
-using Rebel.Alliance.Canary.Services;
 using Rebel.Alliance.Canary.TestUtilities;
 using MediatR;
 using Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders;
 using Microsoft.Extensions.DependencyInjection;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework;
+using Rebel.Alliance.Canary.OIDC.Models;
+using Rebel.Alliance.Canary.OIDC.Services;
+using Rebel.Alliance.Canary.Security;
 
 namespace Rebel.Alliance.Canary.Tests
 {
@@ -80,7 +82,7 @@ namespace Rebel.Alliance.Canary.Tests
                 RedirectUri = "https://testapp.com/callback"
             };
 
-            Messaging.TokenResponse tokenResponse = await _oidcProviderService.ExchangeAuthorizationCodeAsync(tokenRequest);
+            TokenResponse tokenResponse = await _oidcProviderService.ExchangeAuthorizationCodeAsync(tokenRequest);
 
             Assert.NotNull(tokenResponse);
             Assert.NotNull(tokenResponse.AccessToken);

@@ -3,7 +3,6 @@ using BlazorAppTest01.Components;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using Rebel.Alliance.Canary.Services;
 using Rebel.Alliance.Canary.Abstractions;
 using System.Text;
 using MediatR;
@@ -16,6 +15,8 @@ using Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders;
 using Rebel.Alliance.Canary.InMemoryActorFramework;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 using Rebel.Alliance.Canary.Abstractions.Actors;
+using Rebel.Alliance.Canary.OIDC.Services;
+using Rebel.Alliance.Canary.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 

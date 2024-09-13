@@ -1,5 +1,5 @@
-﻿using Rebel.Alliance.Canary.Models;
-using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
+﻿using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
+using Rebel.Alliance.Canary.VerifiableCredentials;
 using System;
 using System.Collections.Generic;
 

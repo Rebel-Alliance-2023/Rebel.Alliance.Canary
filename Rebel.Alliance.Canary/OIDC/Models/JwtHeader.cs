@@ -1,4 +1,4 @@
-﻿namespace Rebel.Alliance.Canary.Models
+﻿namespace Rebel.Alliance.Canary.OIDC.Models
 {
     public class JwtHeader
     {

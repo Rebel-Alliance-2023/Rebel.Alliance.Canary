@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Rebel.Alliance.Canary.Abstractions;
 using Rebel.Alliance.Canary.Abstractions.Actors;
-using Rebel.Alliance.Canary.Models;
 using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
-using Rebel.Alliance.Canary.Services;
+using Rebel.Alliance.Canary.Security;
+using Rebel.Alliance.Canary.VerifiableCredentials;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialIssuerActor
 {

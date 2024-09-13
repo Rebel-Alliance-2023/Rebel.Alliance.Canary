@@ -1,4 +1,4 @@
-﻿namespace Rebel.Alliance.Canary.Abstractions
+﻿namespace Rebel.Alliance.Canary.Security
 {
     public interface IKeyStore
     {

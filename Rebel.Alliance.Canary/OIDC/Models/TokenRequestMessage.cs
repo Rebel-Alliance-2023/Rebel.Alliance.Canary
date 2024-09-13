@@ -1,5 +1,5 @@
 ﻿using Rebel.Alliance.Canary.Abstractions;
-using Rebel.Alliance.Canary.Models;
+using Rebel.Alliance.Canary.VerifiableCredentials;
 
 public class TokenRequestMessage : IActorMessage
 {

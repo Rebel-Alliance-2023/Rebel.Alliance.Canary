@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rebel.Alliance.Canary.Models
+namespace Rebel.Alliance.Canary.OIDC.Models
 {
     public class AuthorizationResponse
     {

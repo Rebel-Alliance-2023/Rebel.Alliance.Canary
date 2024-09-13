@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Rebel.Alliance.Canary.Abstractions
+namespace Rebel.Alliance.Canary.Security
 {
 
 

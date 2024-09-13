@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Rebel.Alliance.Canary.Abstractions;
 
-namespace Rebel.Alliance.Canary.Services
+namespace Rebel.Alliance.Canary.Security
 {
     public interface IKeyManagementService
     {

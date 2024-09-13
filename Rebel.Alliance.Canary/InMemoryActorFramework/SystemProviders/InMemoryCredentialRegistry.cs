@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using Rebel.Alliance.Canary.Models;
+    using Rebel.Alliance.Canary.VerifiableCredentials;
 
     public class InMemoryCredentialRegistry
     {

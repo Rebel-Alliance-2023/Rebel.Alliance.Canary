@@ -1,4 +1,4 @@
-﻿using Rebel.Alliance.Canary.Services;
+﻿using Rebel.Alliance.Canary.OIDC.Services;
 
 namespace Rebel.Alliance.Canary.Abstractions.Actors
 {

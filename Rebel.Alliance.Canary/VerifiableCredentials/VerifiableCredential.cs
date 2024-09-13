@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Rebel.Alliance.Canary.Models
+namespace Rebel.Alliance.Canary.VerifiableCredentials
 {
     public class VerifiableCredential
     {

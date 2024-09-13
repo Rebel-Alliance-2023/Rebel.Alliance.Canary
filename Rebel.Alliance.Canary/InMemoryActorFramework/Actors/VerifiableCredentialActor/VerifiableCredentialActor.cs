@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Rebel.Alliance.Canary.Abstractions;
 using Rebel.Alliance.Canary.Abstractions.Actors;
-using Rebel.Alliance.Canary.Models;
 using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
-using Rebel.Alliance.Canary.Services;
+using Rebel.Alliance.Canary.Security;
+using Rebel.Alliance.Canary.VerifiableCredentials;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.VerifiableCredentialActor
 {

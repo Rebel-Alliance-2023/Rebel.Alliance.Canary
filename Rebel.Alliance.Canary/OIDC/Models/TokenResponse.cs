@@ -1,4 +1,4 @@
-﻿namespace Rebel.Alliance.Canary.Messaging
+﻿namespace Rebel.Alliance.Canary.OIDC.Models
 {
     public class TokenResponse
     {

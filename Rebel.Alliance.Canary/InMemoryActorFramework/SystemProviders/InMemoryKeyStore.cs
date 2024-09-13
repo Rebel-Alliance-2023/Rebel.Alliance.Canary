@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Security;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders
 {

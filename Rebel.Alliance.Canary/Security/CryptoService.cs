@@ -2,9 +2,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Rebel.Alliance.Canary.Abstractions;
 
-namespace Rebel.Alliance.Canary.Services
+namespace Rebel.Alliance.Canary.Security
 {
     public interface ICryptoService
     {
