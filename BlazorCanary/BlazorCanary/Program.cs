@@ -56,7 +56,7 @@ builder.Services.AddAuthentication(options =>
         {
             // Custom token validation logic using Canary services
             var decentralizedOidcService = context.HttpContext.RequestServices
-                .GetRequiredService<DecentralizedOIDCProviderService>();
+                .GetRequiredService<DecentralizedOIDCProvider>();
             // Implement token validation logic here
         }
     };
@@ -75,7 +75,7 @@ builder.Services.AddSingleton<ICryptoService, CryptoService>();
 builder.Services.AddSingleton<IKeyManagementService, KeyManagementService>();
 builder.Services.AddSingleton<IActorMessageBus, InMemoryActorMessageBus>();
 builder.Services.AddSingleton<IActorStateManager, InMemoryActorStateManager>();
-builder.Services.AddSingleton<DecentralizedOIDCProviderService>();
+builder.Services.AddSingleton<DecentralizedOIDCProvider>();
 builder.Services.AddSingleton<OidcProviderService>();
 builder.Services.AddSingleton<IKeyStore, InMemoryKeyStore>();
 

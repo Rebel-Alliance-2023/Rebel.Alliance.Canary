@@ -13,17 +13,16 @@ using Rebel.Alliance.Canary.OIDC.Services;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 using Rebel.Alliance.Canary.VerifiableCredentials.Generator;
+using Rebel.Alliance.Canary.Configuration;
 
 namespace Rebel.Alliance.Canary.Tests
 {
     public class CanaryOidcTests : IClassFixture<CanaryTestFixture>
     {
-        private readonly CanaryTestFixture _fixture;
         private readonly IDecentralizedOIDCProviderService _oidcProviderService;
 
         public CanaryOidcTests(CanaryTestFixture fixture)
         {
-            _fixture = fixture;
             _oidcProviderService = fixture.OidcProviderService;
         }
 
@@ -180,33 +179,21 @@ namespace Rebel.Alliance.Canary.Tests
 
     public class CanaryTestFixture : IDisposable
     {
-        public ICryptoService CryptoService { get; }
-        public IKeyManagementService KeyManagementService { get; }
         public IDecentralizedOIDCProviderService OidcProviderService { get; }
-        public IActorMessageBus ActorMessageBus { get; }
 
         public CanaryTestFixture()
         {
             var services = new ServiceCollection();
 
-            // Register the OIDCClientActor
-            services.AddTransient<OIDCClientActor>();
-
-            // Register the handler
-            services.AddTransient<IRequestHandler<ActorMessageEnvelope<OIDCClientActor>, object>, OIDCClientActorHandler>();
-
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CanaryTestFixture).Assembly));
+            services.AddCanaryActorSystem(options =>
+            {
+                options.ActorSystemName = "TestActorSystem";
+                options.ActorFramework = "in-memory";
+            });
 
             var serviceProvider = services.BuildServiceProvider();
-            var mediator = serviceProvider.GetRequiredService<IMediator>();
 
-            CryptoService = new CryptoService(new InMemoryKeyStore());
-            KeyManagementService = new KeyManagementService(CryptoService);
-            ActorMessageBus = new InMemoryActorMessageBus(mediator);
-            OidcProviderService = new DecentralizedOIDCProviderService(
-                ActorMessageBus,
-                CryptoService,
-                KeyManagementService);
+            OidcProviderService = serviceProvider.GetRequiredService<DecentralizedOIDCProvider>();
         }
 
         public void Dispose()
@@ -214,5 +201,6 @@ namespace Rebel.Alliance.Canary.Tests
             // Cleanup if necessary
         }
     }
+
 
 }

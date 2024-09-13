@@ -24,13 +24,13 @@ namespace Rebel.Alliance.Canary.OIDC.Services
 
 
 
-    public class DecentralizedOIDCProviderService : IDecentralizedOIDCProviderService
+    public class DecentralizedOIDCProvider : IDecentralizedOIDCProviderService
     {
         private readonly IActorMessageBus _actorMessageBus;
         private readonly ICryptoService _cryptoService;
         private readonly IKeyManagementService _keyManagementService;
 
-        public DecentralizedOIDCProviderService(
+        public DecentralizedOIDCProvider(
             IActorMessageBus actorMessageBus,
             ICryptoService cryptoService,
             IKeyManagementService keyManagementService)
