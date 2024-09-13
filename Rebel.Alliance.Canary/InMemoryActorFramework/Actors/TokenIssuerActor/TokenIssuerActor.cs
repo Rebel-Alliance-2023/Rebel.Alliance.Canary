@@ -5,6 +5,7 @@ using System.Text;
 using Rebel.Alliance.Canary.Abstractions.Actors;
 using Rebel.Alliance.Canary.OIDC.Models;
 using Rebel.Alliance.Canary.Security;
+using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 

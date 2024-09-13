@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Rebel.Alliance.Canary.Models;
-using Rebel.Alliance.Canary.TestUtilities;
 using MediatR;
-using Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders;
+using Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem;
 using Microsoft.Extensions.DependencyInjection;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework;
 using Rebel.Alliance.Canary.OIDC.Models;
 using Rebel.Alliance.Canary.OIDC.Services;
 using Rebel.Alliance.Canary.Security;
+using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
+using Rebel.Alliance.Canary.VerifiableCredentials.Generator;
 
 namespace Rebel.Alliance.Canary.Tests
 {

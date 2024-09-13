@@ -11,12 +11,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
-using Rebel.Alliance.Canary.InMemoryActorFramework.SystemProviders;
 using Rebel.Alliance.Canary.InMemoryActorFramework;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 using Rebel.Alliance.Canary.Abstractions.Actors;
 using Rebel.Alliance.Canary.OIDC.Services;
 using Rebel.Alliance.Canary.Security;
+using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
+using Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem;
 
 var builder = WebApplication.CreateBuilder(args);
 

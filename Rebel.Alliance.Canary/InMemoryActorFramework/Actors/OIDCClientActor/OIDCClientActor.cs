@@ -1,12 +1,11 @@
 using MediatR;
-using Rebel.Alliance.Canary.Messaging;
 using System;
 using System.Threading.Tasks;
-using Rebel.Alliance.Canary.InMemoryActorFramework;
 using Rebel.Alliance.Canary.Abstractions;
 using Rebel.Alliance.Canary.Abstractions.Actors;
 using Rebel.Alliance.Canary.OIDC.Services;
 using Rebel.Alliance.Canary.VerifiableCredentials;
+using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
 {
