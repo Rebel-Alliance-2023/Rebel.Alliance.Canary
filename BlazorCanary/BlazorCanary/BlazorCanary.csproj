@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Rebel.Alliance.Canary.InMemoryActorFramework\Rebel.Alliance.Canary.InMemoryActorFramework.csproj" />
     <ProjectReference Include="..\..\Rebel.Alliance.Canary.ServiceDefaults\Rebel.Alliance.Canary.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\Rebel.Alliance.Canary\Rebel.Alliance.Canary.csproj" />
     <ProjectReference Include="..\BlazorCanary.Client\BlazorCanary.Client.csproj" />

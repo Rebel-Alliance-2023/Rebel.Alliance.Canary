@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Rebel.Alliance.Canary.InMemoryActorFramework\Rebel.Alliance.Canary.InMemoryActorFramework.csproj" />
     <ProjectReference Include="..\..\Rebel.Alliance.Canary\Rebel.Alliance.Canary.csproj" />
     <ProjectReference Include="..\BlazorAppTest01.Client\BlazorAppTest01.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.8" />

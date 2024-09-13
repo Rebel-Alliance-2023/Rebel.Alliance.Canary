@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Rebel.Alliance.Canary.InMemoryActorFramework\Rebel.Alliance.Canary.InMemoryActorFramework.csproj" />
     <ProjectReference Include="..\Rebel.Alliance.Canary\Rebel.Alliance.Canary.csproj" />
   </ItemGroup>
 

@@ -10,15 +10,17 @@ using MediatR;
 using System.Reflection;
 using BlazorCanary.Client;
 using Microsoft.AspNetCore.Components.Authorization;
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
-using Rebel.Alliance.Canary.InMemoryActorFramework;
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 using Rebel.Alliance.Canary.Abstractions.Actors;
 using Rebel.Alliance.Canary.OIDC.Services;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
+using Rebel.Alliance.Canary.InMemoryActorFramework;
+using Rebel.Alliance.Canary.Configuration;
 using Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
+
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 

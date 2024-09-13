@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.AppHo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.ServiceDefaults", "Rebel.Alliance.Canary.ServiceDefaults\Rebel.Alliance.Canary.ServiceDefaults.csproj", "{851AAB5A-7982-491F-B558-390C6F0A361A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorAppTest01", "BlazorAppTest01\BlazorAppTest01\BlazorAppTest01.csproj", "{9F0A9B51-1971-4E63-B574-B02C9DF9DB31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorAppTest01", "BlazorAppTest01\BlazorAppTest01\BlazorAppTest01.csproj", "{9F0A9B51-1971-4E63-B574-B02C9DF9DB31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorAppTest01.Client", "BlazorAppTest01\BlazorAppTest01.Client\BlazorAppTest01.Client.csproj", "{4B477693-EE0B-4D79-8BFB-BE6FE79B8401}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorAppTest01.Client", "BlazorAppTest01\BlazorAppTest01.Client\BlazorAppTest01.Client.csproj", "{4B477693-EE0B-4D79-8BFB-BE6FE79B8401}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BlazorTest", "BlazorTest", "{34A25879-9E6A-4223-805F-9BD71AD45732}"
 EndProject
@@ -25,7 +25,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{8AA117
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Canary", "Canary", "{36A513CF-C0B9-46B8-BC8C-2D791488D0F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rebel.Alliance.Canary.Tests", "Rebel.Alliance.Canary.Test\Rebel.Alliance.Canary.Tests.csproj", "{11A68871-1A50-4668-8ADA-02A3B52255F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.InMemoryActor.Tests", "Rebel.Alliance.Canary.Test\Rebel.Alliance.Canary.InMemoryActor.Tests.csproj", "{11A68871-1A50-4668-8ADA-02A3B52255F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rebel.Alliance.Canary.InMemoryActorFramework", "Rebel.Alliance.Canary.InMemoryActorFramework\Rebel.Alliance.Canary.InMemoryActorFramework.csproj", "{E8E52F3A-56D5-435A-B237-D24657CA76FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InMemoryActorFramework", "InMemoryActorFramework", "{0764C17A-750A-4E82-A1C3-9C59EFFBA628}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,10 @@ Global
 		{11A68871-1A50-4668-8ADA-02A3B52255F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11A68871-1A50-4668-8ADA-02A3B52255F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11A68871-1A50-4668-8ADA-02A3B52255F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,7 +85,8 @@ Global
 		{851AAB5A-7982-491F-B558-390C6F0A361A} = {8AA11741-1FB9-4B2D-A8B6-9D2528F7FE18}
 		{9F0A9B51-1971-4E63-B574-B02C9DF9DB31} = {34A25879-9E6A-4223-805F-9BD71AD45732}
 		{4B477693-EE0B-4D79-8BFB-BE6FE79B8401} = {34A25879-9E6A-4223-805F-9BD71AD45732}
-		{11A68871-1A50-4668-8ADA-02A3B52255F1} = {36A513CF-C0B9-46B8-BC8C-2D791488D0F0}
+		{11A68871-1A50-4668-8ADA-02A3B52255F1} = {0764C17A-750A-4E82-A1C3-9C59EFFBA628}
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB} = {0764C17A-750A-4E82-A1C3-9C59EFFBA628}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {08BE26BE-C599-45EA-A6B4-EB6F6D4D53E2}

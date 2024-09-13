@@ -1,10 +1,11 @@
-﻿using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor;
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
+﻿
 using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 using Rebel.Alliance.Canary.OIDC.Models;
 using Rebel.Alliance.Canary.Security;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor;
 
 
 namespace Rebel.Alliance.Canary.OIDC.Services
