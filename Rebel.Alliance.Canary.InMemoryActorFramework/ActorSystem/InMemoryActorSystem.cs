@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using MediatR;
-using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Actor.Interfaces;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem
 {

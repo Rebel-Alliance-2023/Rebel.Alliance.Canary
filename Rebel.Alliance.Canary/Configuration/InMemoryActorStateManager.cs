@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Actor.Interfaces;
 
 namespace Rebel.Alliance.Canary.Configuration
 {

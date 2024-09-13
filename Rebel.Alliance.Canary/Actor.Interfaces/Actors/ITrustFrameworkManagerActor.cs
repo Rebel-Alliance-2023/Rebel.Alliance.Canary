@@ -1,4 +1,6 @@
-﻿namespace Rebel.Alliance.Canary.Abstractions.Actors
+﻿using Rebel.Alliance.Canary.Actor.Interfaces;
+
+namespace Rebel.Alliance.Canary.Actor.Interfaces.Actors
 {
     public interface ITrustFrameworkManagerActor : IActor
     {

@@ -1,6 +1,7 @@
-﻿using Rebel.Alliance.Canary.OIDC.Services;
+﻿using Rebel.Alliance.Canary.Actor.Interfaces;
+using Rebel.Alliance.Canary.OIDC.Services;
 
-namespace Rebel.Alliance.Canary.Abstractions.Actors
+namespace Rebel.Alliance.Canary.Actor.Interfaces.Actors
 {
     public interface IOIDCClientActor : IActor
     {

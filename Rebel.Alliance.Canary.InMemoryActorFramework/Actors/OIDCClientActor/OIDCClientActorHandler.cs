@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Rebel.Alliance.Canary.InMemoryActorFramework;
+using Rebel.Alliance.Canary.Actor.Interfaces;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
 {
@@ -16,7 +17,7 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
 
         public async Task<object> Handle(ActorMessageEnvelope<OIDCClientActor> request, CancellationToken cancellationToken)
         {
-            return await _actor.ReceiveAsync((Abstractions.IActorMessage)request.Message);
+            return await _actor.ReceiveAsync((IActorMessage)request.Message);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialHolderActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialIssuerActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;

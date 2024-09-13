@@ -1,6 +1,7 @@
-﻿using Rebel.Alliance.Canary.OIDC.Models;
+﻿using Rebel.Alliance.Canary.Actor.Interfaces;
+using Rebel.Alliance.Canary.OIDC.Models;
 
-namespace Rebel.Alliance.Canary.Abstractions.Actors;
+namespace Rebel.Alliance.Canary.Actor.Interfaces.Actors;
 
 public interface ITokenIssuerActor : IActor
 {

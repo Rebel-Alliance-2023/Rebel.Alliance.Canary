@@ -1,7 +1,7 @@
 ﻿namespace Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem
 {
     using System.Threading.Tasks;
-    using Rebel.Alliance.Canary.Abstractions;
+    using Rebel.Alliance.Canary.Actor.Interfaces;
 
     public class InMemoryActorSystemRef<TActor> : IActorRef where TActor : IActor
     {

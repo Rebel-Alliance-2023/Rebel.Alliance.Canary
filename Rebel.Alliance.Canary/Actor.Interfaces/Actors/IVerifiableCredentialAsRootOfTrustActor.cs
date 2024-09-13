@@ -1,6 +1,7 @@
-﻿using Rebel.Alliance.Canary.VerifiableCredentials;
+﻿using Rebel.Alliance.Canary.Actor.Interfaces;
+using Rebel.Alliance.Canary.VerifiableCredentials;
 
-namespace Rebel.Alliance.Canary.Abstractions.Actors
+namespace Rebel.Alliance.Canary.Actor.Interfaces.Actors
 {
     public interface IVerifiableCredentialAsRootOfTrustActor : IActor
     {

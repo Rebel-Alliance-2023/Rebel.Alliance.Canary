@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MediatR;
-using Rebel.Alliance.Canary.Abstractions;
-using Rebel.Alliance.Canary.Abstractions.Actors;
+using Rebel.Alliance.Canary.Actor.Interfaces;
+using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor
 {

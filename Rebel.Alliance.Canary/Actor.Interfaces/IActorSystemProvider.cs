@@ -1,4 +1,4 @@
-﻿namespace Rebel.Alliance.Canary.Abstractions
+﻿namespace Rebel.Alliance.Canary.Actor.Interfaces
 {
     public interface IActorSystemProvider
     {

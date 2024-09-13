@@ -1,7 +1,7 @@
 ﻿namespace Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem
 {
     using System;
-    using Rebel.Alliance.Canary.Abstractions;
+    using Rebel.Alliance.Canary.Actor.Interfaces;
 
     public class InMemoryActorProxyFactory : IActorProxyFactory
     {

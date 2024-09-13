@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Rebel.Alliance.Canary.Abstractions;
-using Rebel.Alliance.Canary.Abstractions.Actors;
+using Rebel.Alliance.Canary.Actor.Interfaces;
+using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
 using Rebel.Alliance.Canary.Models.Rebel.Alliance.Canary.Models;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.VerifiableCredentials;

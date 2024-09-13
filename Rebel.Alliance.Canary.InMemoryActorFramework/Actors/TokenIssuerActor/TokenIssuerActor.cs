@@ -1,11 +1,11 @@
-using Rebel.Alliance.Canary.Abstractions;
 using Rebel.Alliance.Canary.Models;
 using System.Text.Json;
 using System.Text;
-using Rebel.Alliance.Canary.Abstractions.Actors;
 using Rebel.Alliance.Canary.OIDC.Models;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
+using Rebel.Alliance.Canary.Actor.Interfaces;
+using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 

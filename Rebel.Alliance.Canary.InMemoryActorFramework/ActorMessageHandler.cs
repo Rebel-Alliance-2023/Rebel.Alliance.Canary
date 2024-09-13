@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using Rebel.Alliance.Canary.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Rebel.Alliance.Canary.Actor.Interfaces;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework;
 public class ActorMessageHandler<TActor> : IRequestHandler<ActorMessageEnvelope<TActor>, object> where TActor : IActor

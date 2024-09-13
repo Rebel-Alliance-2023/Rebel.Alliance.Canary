@@ -1,4 +1,4 @@
-using Rebel.Alliance.Canary.Abstractions;
+using Rebel.Alliance.Canary.Actor.Interfaces;
 public class ValidateTokenMessage : IActorMessage
 {
     public string Token { get; }

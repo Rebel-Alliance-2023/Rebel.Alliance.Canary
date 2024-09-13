@@ -1,4 +1,4 @@
-﻿using Rebel.Alliance.Canary.Abstractions;
+﻿using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.VerifiableCredentials;
 
 public class TokenRequestMessage : IActorMessage
