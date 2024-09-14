@@ -10,6 +10,8 @@ using MediatR.Pipeline;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 using Rebel.Alliance.Canary.OIDC.Services;
+using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 
 namespace Rebel.Alliance.Canary.Configuration
 {
@@ -59,23 +61,37 @@ namespace Rebel.Alliance.Canary.Configuration
             foreach (var actorType in actorTypes)
             {
                 services.AddTransient(actorType);
-                
+
                 // Create the generic ActorMessageEnvelope type
                 var envelopeType = typeof(ActorMessageEnvelope<>).MakeGenericType(actorType);
-                
+
                 // Create the generic IRequestHandler type
                 var handlerType = typeof(IRequestHandler<,>).MakeGenericType(envelopeType, typeof(object));
-                
+
                 // Create the generic ActorMessageHandler type
                 var concreteHandlerType = typeof(ActorMessageHandler<>).MakeGenericType(actorType);
-                
+
                 // Register the handler
                 services.AddTransient(handlerType, concreteHandlerType);
             }
+
+            services.AddTransient<ITokenIssuerActor, TokenIssuerActor>(sp => new TokenIssuerActor(
+               sp.GetRequiredService<ICryptoService>(),
+               sp.GetRequiredService<IActorMessageBus>(),
+               sp.GetRequiredService<IActorStateManager>(),
+               Guid.NewGuid().ToString()
+            ));
+
+            //// Ensure ITokenIssuerActor and its handler are registered
+            //services.AddTransient<ITokenIssuerActor, TokenIssuerActor>(sp => new TokenIssuerActor("YourStringParameter"));
+
+
+            services.AddTransient<IRequestHandler<ActorMessageEnvelope<ITokenIssuerActor>, object>, ActorMessageHandler<ITokenIssuerActor>>();
         }
     }
 
     public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+        where TRequest : notnull
     {
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {

@@ -1,12 +1,12 @@
-﻿
-using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
+﻿using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 using Rebel.Alliance.Canary.OIDC.Models;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor;
-
+using Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor.Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 
 namespace Rebel.Alliance.Canary.OIDC.Services
 {
@@ -19,25 +19,23 @@ namespace Rebel.Alliance.Canary.OIDC.Services
 
         Task<OidcResponse> ExchangeAuthorizationCodeAsync(string clientId, string code, string redirectUri);
         Task<string> InitiateAuthenticationAsync(string clientId, string redirectUri);
-
+        Task GenerateAndStorePrivateKeyAsync(string clientId);
     }
-
-
 
     public class DecentralizedOIDCProvider : IDecentralizedOIDCProviderService
     {
         private readonly IActorMessageBus _actorMessageBus;
         private readonly ICryptoService _cryptoService;
-        private readonly IKeyManagementService _keyManagementService;
+        private readonly IKeyStore _keyStore;
 
         public DecentralizedOIDCProvider(
             IActorMessageBus actorMessageBus,
             ICryptoService cryptoService,
-            IKeyManagementService keyManagementService)
+            IKeyStore keyStore)
         {
             _actorMessageBus = actorMessageBus;
             _cryptoService = cryptoService;
-            _keyManagementService = keyManagementService;
+            _keyStore = keyStore;
         }
 
         public async Task<string> InitiateAuthenticationAsync(string clientId, string redirectUri)
@@ -53,7 +51,6 @@ namespace Rebel.Alliance.Canary.OIDC.Services
 
             return redirectUrl;
         }
-
 
         public async Task<OidcResponse> ExchangeAuthorizationCodeAsync(string clientId, string code, string redirectUri)
         {
@@ -94,7 +91,14 @@ namespace Rebel.Alliance.Canary.OIDC.Services
                 "RevocationManager",
                 new RevokeCredentialMessage(credentialId));
         }
+
+        public async Task GenerateAndStorePrivateKeyAsync(string clientId)
+        {
+            // Generate a new key pair
+            var (publicKey, privateKey) = await _cryptoService.GenerateKeyPairAsync();
+
+            // Store the private key using the IKeyStore
+            await _keyStore.StoreKeyAsync(clientId, privateKey);
+        }
     }
-
 }
-

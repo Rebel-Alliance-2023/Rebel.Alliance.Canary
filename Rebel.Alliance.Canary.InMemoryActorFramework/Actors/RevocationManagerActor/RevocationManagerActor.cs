@@ -12,13 +12,16 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerA
         private readonly IActorStateManager _stateManager;
         private readonly ILogger<RevocationManagerActor> _logger;
 
-        public RevocationManagerActor(
-            string id,
-            IActorStateManager stateManager,
-            ILogger<RevocationManagerActor> logger) : base(id)
+        public IActorMessageBus ActorMessageBus { get; }
+        public IActorStateManager ActorStateManager { get; }
+        public ILogger<RevocationManagerActor> Logger { get; }
+
+
+        public RevocationManagerActor(string? id, IActorMessageBus actorMessageBus, IActorStateManager actorStateManager, ILogger<RevocationManagerActor> logger) : base(id)
         {
-            _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            ActorMessageBus = actorMessageBus;
+            ActorStateManager = actorStateManager;
+            Logger = logger;
         }
 
         public override async Task<object> ReceiveAsync(IActorMessage message)

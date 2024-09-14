@@ -20,6 +20,7 @@ using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
 using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
+using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor.Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);

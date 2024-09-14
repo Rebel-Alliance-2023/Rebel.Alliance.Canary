@@ -10,117 +10,129 @@ using Rebel.Alliance.Canary.OIDC.Models;
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
 {
-    public class OIDCClientActor : ActorBase, IOIDCClientActor
+    namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor
     {
-        private readonly IActorStateManager _stateManager;
-        private readonly IActorMessageBus _messageBus;
-        private readonly ILogger<OIDCClientActor> _logger;
-        private VerifiableCredential _clientCredential;
-
-        public OIDCClientActor(
-            string id,
-            IActorStateManager stateManager,
-            IActorMessageBus messageBus,
-            ILogger<OIDCClientActor> logger) : base(id)
+        public class OIDCClientActor : ActorBase, IOIDCClientActor
         {
-            _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
-            _messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+            private readonly IActorStateManager _stateManager;
+            private readonly IActorMessageBus _messageBus;
+            private readonly ILogger<OIDCClientActor> _logger;
+            private VerifiableCredential _clientCredential;
 
-        public override async Task OnActivateAsync()
-        {
-            try
-            {
-                _clientCredential = await _stateManager.GetStateAsync<VerifiableCredential>("ClientCredential")
-                                   ?? new VerifiableCredential();
-                _logger.LogInformation($"OIDCClientActor {Id} activated. Client credential loaded.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error activating OIDCClientActor: {Id}");
-                throw;
-            }
-        }
+            public IActorMessageBus ActorMessageBus { get; }
+            public ILogger<OIDCClientActor> Logger { get; }
 
-        public async Task<string> InitiateAuthenticationAsync(string redirectUri)
-        {
-            try
+            public OIDCClientActor(
+                string id,
+                IActorStateManager stateManager,
+                IActorMessageBus messageBus,
+                ILogger<OIDCClientActor> logger) : base(id)
             {
-                var authorizationCode = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-                await _stateManager.SetStateAsync("AuthorizationCode", authorizationCode);
-                _logger.LogInformation($"Authentication initiated for OIDCClientActor {Id}");
-                return authorizationCode;
+                _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
+                _messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
+                _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+                _clientCredential = new VerifiableCredential(); // Initialize non-nullable field
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error initiating authentication for OIDCClientActor {Id}");
-                throw;
-            }
-        }
 
-        public async Task<OidcResponse> ExchangeAuthorizationCodeAsync(string code, string redirectUri, string clientId)
-        {
-            try
+            public OIDCClientActor(string? id, IActorMessageBus actorMessageBus, ILogger<OIDCClientActor> logger) : base(id)
             {
-                var storedCode = await _stateManager.GetStateAsync<string>("AuthorizationCode");
-                if (storedCode != code)
+                _messageBus = actorMessageBus ?? throw new ArgumentNullException(nameof(actorMessageBus));
+                _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+                _clientCredential = new VerifiableCredential(); // Initialize non-nullable field
+            }
+
+            public override async Task OnActivateAsync()
+            {
+                try
                 {
-                    throw new InvalidOperationException("Invalid authorization code.");
+                    _clientCredential = await _stateManager.GetStateAsync<VerifiableCredential>("ClientCredential")
+                                       ?? new VerifiableCredential();
+                    _logger.LogInformation($"OIDCClientActor {Id} activated. Client credential loaded.");
                 }
-
-                var tokenRequest = new TokenRequestMessage(_clientCredential, redirectUri, clientId, Id);
-                var oidcResponse = await _messageBus.SendMessageAsync<ITokenIssuerActor, OidcResponse>("TokenIssuer", tokenRequest);
-
-                _logger.LogInformation($"Authorization code exchanged for OIDCClientActor {Id}");
-                return oidcResponse;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error exchanging authorization code for OIDCClientActor {Id}");
-                throw;
-            }
-        }
-
-
-        public async Task<bool> ValidateTokenAsync(string token)
-        {
-            try
-            {
-                var validationMessage = new ValidateTokenMessage(token);
-                var isValid = await _messageBus.SendMessageAsync<ICredentialVerifierActor, bool>("CredentialVerifier", validationMessage);
-                _logger.LogInformation($"Token validation result for OIDCClientActor {Id}: {isValid}");
-                return isValid;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error validating token for OIDCClientActor {Id}");
-                throw;
-            }
-        }
-
-        public override async Task<object> ReceiveAsync(IActorMessage message)
-        {
-            try
-            {
-                switch (message)
+                catch (Exception ex)
                 {
-                    case InitiateAuthenticationMessage initAuthMessage:
-                        return await InitiateAuthenticationAsync(initAuthMessage.RedirectUri);
-                    case ExchangeAuthorizationCodeMessage exchangeCodeMessage:
-                        return await ExchangeAuthorizationCodeAsync(exchangeCodeMessage.Code, exchangeCodeMessage.RedirectUri, exchangeCodeMessage.ClientId);
-                    case ValidateTokenMessage validationMessage:
-                        return await ValidateTokenAsync(validationMessage.Token);
-                    default:
-                        throw new NotSupportedException($"Message type {message.GetType().Name} is not supported.");
+                    _logger.LogError(ex, $"Error activating OIDCClientActor: {Id}");
+                    throw;
                 }
             }
-            catch (Exception ex)
+
+            public async Task<string> InitiateAuthenticationAsync(string redirectUri)
             {
-                _logger.LogError(ex, $"Error processing message in OIDCClientActor: {Id}");
-                throw;
+                try
+                {
+                    var authorizationCode = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+                    await _stateManager.SetStateAsync("AuthorizationCode", authorizationCode);
+                    _logger.LogInformation($"Authentication initiated for OIDCClientActor {Id}");
+                    return authorizationCode;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error initiating authentication for OIDCClientActor {Id}");
+                    throw;
+                }
+            }
+
+            public async Task<TokenResponse> ExchangeAuthorizationCodeAsync(string code, string redirectUri, string clientId)
+            {
+                try
+                {
+                    var storedCode = await _stateManager.GetStateAsync<string>("AuthorizationCode");
+                    if (storedCode != code)
+                    {
+                        throw new InvalidOperationException("Invalid authorization code.");
+                    }
+
+                    var tokenRequest = new TokenRequestMessage(_clientCredential, redirectUri, clientId, Id);
+                    TokenResponse tokenResponse = await _messageBus.SendMessageAsync<ITokenIssuerActor, TokenResponse>("TokenIssuer", tokenRequest);
+
+                    _logger.LogInformation($"Authorization code exchanged for OIDCClientActor {Id}");
+                    return tokenResponse;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error exchanging authorization code for OIDCClientActor {Id}");
+                    throw;
+                }
+            }
+
+            public async Task<bool> ValidateTokenAsync(string token)
+            {
+                try
+                {
+                    var validationMessage = new ValidateTokenMessage(token);
+                    var isValid = await _messageBus.SendMessageAsync<ICredentialVerifierActor, bool>("CredentialVerifier", validationMessage);
+                    _logger.LogInformation($"Token validation result for OIDCClientActor {Id}: {isValid}");
+                    return isValid;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error validating token for OIDCClientActor {Id}");
+                    throw;
+                }
+            }
+
+            public override async Task<object> ReceiveAsync(IActorMessage message)
+            {
+                try
+                {
+                    switch (message)
+                    {
+                        case InitiateAuthenticationMessage initAuthMessage:
+                            return await InitiateAuthenticationAsync(initAuthMessage.RedirectUri);
+                        case ExchangeAuthorizationCodeMessage exchangeCodeMessage:
+                            return await ExchangeAuthorizationCodeAsync(exchangeCodeMessage.Code, exchangeCodeMessage.RedirectUri, exchangeCodeMessage.ClientId);
+                        case ValidateTokenMessage validationMessage:
+                            return await ValidateTokenAsync(validationMessage.Token);
+                        default:
+                            throw new NotSupportedException($"Message type {message.GetType().Name} is not supported.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error processing message in OIDCClientActor: {Id}");
+                    throw;
+                }
             }
         }
-
     }
 }

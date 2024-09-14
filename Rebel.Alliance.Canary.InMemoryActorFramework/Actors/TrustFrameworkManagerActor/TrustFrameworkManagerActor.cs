@@ -15,6 +15,9 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TrustFrameworkMana
         private readonly HashSet<string> _trustedIssuers = new HashSet<string>();
         private readonly HashSet<string> _revokedIssuers = new HashSet<string>();
 
+        public IActorMessageBus ActorMessageBus { get; }
+        public ILogger<TrustFrameworkManagerActor> Logger { get; }
+
         public TrustFrameworkManagerActor(
             string id,
             ILogger<TrustFrameworkManagerActor> logger,
@@ -22,6 +25,12 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TrustFrameworkMana
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
+        }
+
+        public TrustFrameworkManagerActor(string? id, IActorMessageBus actorMessageBus, ILogger<TrustFrameworkManagerActor> logger) : base(id)
+        {
+            ActorMessageBus = actorMessageBus;
+            Logger = logger;
         }
 
         public override async Task OnActivateAsync()

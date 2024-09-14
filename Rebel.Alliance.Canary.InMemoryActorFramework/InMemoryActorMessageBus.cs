@@ -23,8 +23,8 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework
 
         public async Task<TResult> SendMessageAsync<TActor, TResult>(string actorId, object message) where TActor : IActor
         {
-            var envelope = new ActorMessageEnvelope<TActor>(actorId, message);
-            var result = await _mediator.Send(envelope);
+            ActorMessageEnvelope<TActor> envelope = new ActorMessageEnvelope<TActor>(actorId, message);
+            object result = await _mediator.Send(envelope);
             return (TResult)result;
         }
 

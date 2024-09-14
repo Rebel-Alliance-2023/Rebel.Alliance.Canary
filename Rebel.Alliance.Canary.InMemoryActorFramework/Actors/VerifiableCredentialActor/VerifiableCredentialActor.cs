@@ -17,6 +17,9 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.VerifiableCredenti
         private readonly ILogger<VerifiableCredentialActor> _logger;
         private readonly IActorStateManager _stateManager;
 
+        public IActorMessageBus ActorMessageBus { get; }
+        public ILogger<VerifiableCredentialActor> Logger { get; }
+
         public VerifiableCredentialActor(
             string id,
             ICryptoService cryptoService,
@@ -26,6 +29,12 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.VerifiableCredenti
             _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
+        }
+
+        public VerifiableCredentialActor(string? id, IActorMessageBus actorMessageBus, ILogger<VerifiableCredentialActor> logger) : base(id)
+        {
+            ActorMessageBus = actorMessageBus;
+            Logger = logger;
         }
 
         public override async Task<object> ReceiveAsync(IActorMessage message)

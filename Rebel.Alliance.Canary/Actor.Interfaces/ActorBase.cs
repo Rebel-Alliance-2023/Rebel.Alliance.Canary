@@ -10,9 +10,9 @@ namespace Rebel.Alliance.Canary.Actor.Interfaces
         protected IActorStateManager StateManager { get; private set; }
         protected IMediator Mediator { get; private set; }
 
-        public string Id { get; private set; }
+        public string Id { get; private set; } = Guid.NewGuid().ToString();
 
-        public ActorBase(string id)
+        public ActorBase(string? id)
         {
             Id = id;
         }
