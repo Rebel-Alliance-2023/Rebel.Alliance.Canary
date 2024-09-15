@@ -20,7 +20,6 @@ using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
 using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor.Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
 
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -89,14 +88,13 @@ builder.Services.AddTransient<OIDCClientActor>(sp =>
     )
 );
 
-builder.Services.AddTransient<TokenIssuerActor>(sp =>
-    new TokenIssuerActor(
-        sp.GetRequiredService<ICryptoService>(),
-        sp.GetRequiredService<IActorMessageBus>(),
-        sp.GetRequiredService<IActorStateManager>(),
-        Guid.NewGuid().ToString()
-    )
-);
+builder.Services.AddTransient<ITokenIssuerActor>(sp => new TokenIssuerActor(
+    sp.GetRequiredService<ICryptoService>(),
+    sp.GetRequiredService<IActorMessageBus>(),
+    sp.GetRequiredService<IActorStateManager>(),
+    sp.GetRequiredService<ILogger<TokenIssuerActor>>(),
+    Guid.NewGuid().ToString()
+));
 
 //builder.Services.AddTransient<CredentialVerifierActor>(sp =>
 //    new CredentialVerifierActor(

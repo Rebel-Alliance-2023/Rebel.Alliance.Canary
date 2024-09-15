@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Rebel.Alliance.Canary.OIDC.Models;
+using System.ComponentModel.DataAnnotations;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private readonly TokenExchangeService _tokenExchangeService;
@@ -13,10 +15,18 @@ public class AuthController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("exchange")]
-    public async Task<IActionResult> ExchangeCode([FromQuery] string code, [FromQuery] string redirectUri)
+    [HttpGet("exchange-code")]
+    public async Task<ActionResult<TokenResponse>> ExchangeCode(
+        [FromQuery, Required] string code,
+        [FromQuery, Required] string redirectUri)
     {
+        if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(redirectUri))
+        {
+            return BadRequest("Code and redirectUri are required.");
+        }
+
         _logger.LogInformation($"Received exchange request. Code: {code}, RedirectUri: {redirectUri}");
+
         try
         {
             var tokenResponse = await _tokenExchangeService.ExchangeCodeForTokenAsync(code, redirectUri);
@@ -26,7 +36,7 @@ public class AuthController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Token exchange failed");
-            return BadRequest(ex.Message);
+            return StatusCode(500, "An error occurred while processing your request.");
         }
     }
 }

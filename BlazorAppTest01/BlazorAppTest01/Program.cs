@@ -10,6 +10,7 @@ using Rebel.Alliance.Canary.Actor.Interfaces.Actors;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using Rebel.Alliance.Canary.Security;
+using BlazorAppTest01;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,22 +31,32 @@ builder.Services.AddRazorComponents()
 // Configure authentication
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = "oidc";
 })
 .AddJwtBearer(options =>
 {
-    // Configure JWT Bearer options
+    options.Authority = webAppVc.Authority;
+    options.Audience = webAppVc.Claims["aud"];
+    // Add more JWT Bearer options as needed
 })
 .AddOpenIdConnect("oidc", options =>
 {
     options.SignInScheme = "Cookies";
     options.Authority = webAppVc.Authority;
     options.ClientId = webAppVc.ClientId;
+    options.ClientSecret = webAppVc.ClientSecret;
     options.ResponseType = "code";
     options.SaveTokens = true;
     options.GetClaimsFromUserInfoEndpoint = true;
+    options.Scope.Add("openid");
+    options.Scope.Add("profile");
+    // Add any additional scopes you need
 });
+
+// Add cookie authentication
+builder.Services.AddAuthentication()
+    .AddCookie("Cookies");
 
 // Add authorization
 builder.Services.AddAuthorization();
@@ -55,19 +66,10 @@ builder.Services.AddCanaryActorSystem(options =>
 {
     options.ActorSystemName = "CanaryActorSystem";
     options.ActorFramework = "in-memory";
+    options.WebAppVc = webAppVc;
 });
 
-// Register CredentialVerifierActor with WebAppVerifiableCredential
-builder.Services.AddTransient<ICredentialVerifierActor>(sp => new CredentialVerifierActor(
-    Guid.NewGuid().ToString(),
-    sp.GetRequiredService<ICryptoService>(),
-    sp.GetRequiredService<IRevocationManagerActor>(),
-    sp.GetRequiredService<ILogger<CredentialVerifierActor>>(),
-    webAppVc
-));
-
 builder.Services.AddHttpClient<TokenExchangeService>();
-
 builder.Services.AddControllers();
 
 var app = builder.Build();

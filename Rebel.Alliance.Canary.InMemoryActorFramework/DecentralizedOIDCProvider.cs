@@ -6,7 +6,7 @@ using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.TokenIssuerActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.RevocationManagerActor;
 using Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem;
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor.Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
+
 
 namespace Rebel.Alliance.Canary.OIDC.Services
 {

@@ -12,28 +12,41 @@ using Rebel.Alliance.Canary.Actor.Interfaces;
 using Rebel.Alliance.Canary.Security;
 using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 using Rebel.Alliance.Canary.VerifiableCredentials;
+using System.Security.Cryptography;
 
 
 namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifierActor
 {
-    public class CredentialVerifierActor : ActorBase, ICredentialVerifierActor
+
+public class CredentialVerifierActor : ActorBase, ICredentialVerifierActor
     {
         private readonly ICryptoService _cryptoService;
         private readonly IRevocationManagerActor _revocationManagerActor;
         private readonly ILogger<CredentialVerifierActor> _logger;
         private readonly VerifiableCredential _webAppCredential;
+        private readonly IKeyStore _keyStore;
 
         public CredentialVerifierActor(
             string id,
             ICryptoService cryptoService,
             IRevocationManagerActor revocationManagerActor,
             ILogger<CredentialVerifierActor> logger,
-            VerifiableCredential webAppCredential) : base(id)
+            VerifiableCredential webAppCredential,
+            IKeyStore keyStore) : base(id)
         {
             _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
             _revocationManagerActor = revocationManagerActor ?? throw new ArgumentNullException(nameof(revocationManagerActor));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _webAppCredential = webAppCredential ?? throw new ArgumentNullException(nameof(webAppCredential));
+            _keyStore = keyStore ?? throw new ArgumentNullException(nameof(keyStore));
+
+            // Add this check
+            if (string.IsNullOrEmpty(_webAppCredential.ClientSecret) ||
+                string.IsNullOrEmpty(_webAppCredential.Authority) ||
+                string.IsNullOrEmpty(_webAppCredential.ClientId))
+            {
+                throw new ArgumentException("WebAppCredential is not properly initialized");
+            }
         }
 
         public override async Task<object> ReceiveAsync(IActorMessage message)
@@ -90,6 +103,7 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifier
         }
 
 
+
         public async Task<bool> ValidateTokenAsync(string token)
         {
             try
@@ -100,15 +114,24 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifier
                     return false;
                 }
 
+                _logger.LogInformation($"Validating token: {token}");
+
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_webAppCredential.ClientSecret);
+                byte[] publicKeyBytes = await _keyStore.RetrievePublicKeyAsync(_webAppCredential.ClientId);
+
+                _logger.LogInformation($"Using client ID: {_webAppCredential.ClientId}");
+                _logger.LogInformation($"Authority: {_webAppCredential.Authority}");
+
+                // Convert byte array to RSA instance
+                using var rsa = RSA.Create();
+                rsa.ImportRSAPublicKey(publicKeyBytes, out _);
 
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = new RsaSecurityKey(rsa),
                     ValidateIssuer = true,
-                    ValidIssuer = _webAppCredential.Authority,
+                    ValidIssuer = _webAppCredential.ClientId,
                     ValidateAudience = true,
                     ValidAudience = _webAppCredential.ClientId,
                     ValidateLifetime = true,
@@ -119,7 +142,13 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifier
                 {
                     var claimsPrincipal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
 
-                    // Additional custom claim validation if needed
+                    _logger.LogInformation("Token validated. Checking custom claims...");
+
+                    foreach (var claim in claimsPrincipal.Claims)
+                    {
+                        _logger.LogInformation($"Claim: {claim.Type} = {claim.Value}");
+                    }
+
                     foreach (var claim in _webAppCredential.Claims)
                     {
                         var tokenClaim = claimsPrincipal.FindFirst(claim.Key);
@@ -145,6 +174,7 @@ namespace Rebel.Alliance.Canary.InMemoryActorFramework.Actors.CredentialVerifier
                 return false;
             }
         }
+
         private async Task<bool> CheckSignatureAsync(VerifiableCredential credential)
         {
             try

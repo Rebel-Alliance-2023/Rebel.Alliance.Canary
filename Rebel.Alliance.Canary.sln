@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Canary", "Canary", "{36A513
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.InMemoryActor.Tests", "Rebel.Alliance.Canary.Test\Rebel.Alliance.Canary.InMemoryActor.Tests.csproj", "{11A68871-1A50-4668-8ADA-02A3B52255F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rebel.Alliance.Canary.InMemoryActorFramework", "Rebel.Alliance.Canary.InMemoryActorFramework\Rebel.Alliance.Canary.InMemoryActorFramework.csproj", "{E8E52F3A-56D5-435A-B237-D24657CA76FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.InMemoryActorFramework", "Rebel.Alliance.Canary.InMemoryActorFramework\Rebel.Alliance.Canary.InMemoryActorFramework.csproj", "{E8E52F3A-56D5-435A-B237-D24657CA76FB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InMemoryActorFramework", "InMemoryActorFramework", "{0764C17A-750A-4E82-A1C3-9C59EFFBA628}"
 EndProject

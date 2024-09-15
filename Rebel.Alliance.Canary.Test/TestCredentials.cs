@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rebel.Alliance.Canary.OIDC.Models;
@@ -21,11 +22,20 @@ using Rebel.Alliance.Canary.VerifiableCredentials.Messaging;
 using Rebel.Alliance.Canary.InMemoryActorFramework.ActorSystem;
 using Rebel.Alliance.Canary.Actor.Interfaces;
 using Moq;
-
-using Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor.Rebel.Alliance.Canary.InMemoryActorFramework.Actors.OIDCClientActor;
+using Castle.Core.Logging;
+using System.Diagnostics;
+using Xunit.Abstractions;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Rebel.Alliance.Canary.Tests
 {
+    public class TimedFactAttribute : FactAttribute
+    {
+        public TimedFactAttribute() : base() { }
+    }
+
+
     public class CanaryOidcTests : IClassFixture<CanaryTestFixture>
     {
         private readonly IDecentralizedOIDCProviderService _oidcProviderService;
@@ -37,7 +47,10 @@ namespace Rebel.Alliance.Canary.Tests
         private readonly IRevocationManagerActor _revocationManagerActor;
         private readonly Mock<IDecentralizedOIDCProviderService> _oidcProviderServiceMock;
 
-        public CanaryOidcTests(CanaryTestFixture fixture)
+        private readonly ITestOutputHelper _output;
+        private readonly Stopwatch _stopwatch;
+
+        public CanaryOidcTests(CanaryTestFixture fixture, ITestOutputHelper output)
         {
             _oidcProviderService = fixture.OidcProviderService;
             _credentialVerifierActor = fixture.CredentialVerifierActor;
@@ -47,6 +60,12 @@ namespace Rebel.Alliance.Canary.Tests
             _trustFrameworkManagerActor = fixture.TrustFrameworkManagerActor;
             _revocationManagerActor = fixture.RevocationManagerActor;
             _oidcProviderServiceMock = new Mock<IDecentralizedOIDCProviderService>();
+
+            _output = output;
+            _stopwatch = new Stopwatch();
+
+
+            
         }
 
         [Fact]
@@ -207,23 +226,36 @@ namespace Rebel.Alliance.Canary.Tests
             Assert.True(isValid);
         }
 
-        [Fact]
+        [TimedFact]
         public async Task ValidateToken_ShouldReturnTrue_ForValidIdToken()
         {
-            var redirectUri = "https://testapp.com/callback";
-            var clientId = "testClient";
+            _stopwatch.Start();
 
-            // Generate and store private key
-            await _oidcProviderService.GenerateAndStorePrivateKeyAsync(clientId);
+            try
+            {
+                // Use the clientId from the webAppVc in the fixture
+                var clientId = "test-client-id";
+                var redirectUri = "https://testapp.com/callback";
 
-            var authorizationCode = await _oidcClientActor.InitiateAuthenticationAsync(redirectUri);
-            var tokenResponse = await _oidcClientActor.ExchangeAuthorizationCodeAsync(authorizationCode, redirectUri, clientId);
+                // No need to generate and store private key here, as it's already done in the fixture
 
-            var isValid = await _credentialVerifierActor.ValidateTokenAsync(tokenResponse.IdToken);
+                var authorizationCode = await _oidcClientActor.InitiateAuthenticationAsync(redirectUri);
+                TokenResponse tokenResponse = await _oidcClientActor.ExchangeAuthorizationCodeAsync(authorizationCode, redirectUri, clientId);
 
-            Assert.True(isValid);
+                _output.WriteLine($"ID Token received in test: {tokenResponse.IdToken}");
+
+                var isValid = await _credentialVerifierActor.ValidateTokenAsync(tokenResponse.IdToken);
+
+                _output.WriteLine($"Token validation result: {isValid}");
+
+                Assert.True(isValid, "Token validation failed. Check the logs for more details.");
+            }
+            finally
+            {
+                _stopwatch.Stop();
+                _output.WriteLine($"Test execution time: {_stopwatch.ElapsedMilliseconds} ms");
+            }
         }
-
 
         [Fact]
         public async Task ValidateToken_ShouldReturnFalse_ForExpiredToken()
@@ -278,52 +310,10 @@ namespace Rebel.Alliance.Canary.Tests
             {
                 options.ActorSystemName = "TestActorSystem";
                 options.ActorFramework = "in-memory";
+                options.WebAppVc = webAppVc;
             });
 
-            services.AddLogging(builder => builder.AddConsole());
-            services.AddSingleton<ICryptoService, CryptoService>();
-            services.AddSingleton<IKeyStore, InMemoryKeyStore>();
-            services.AddSingleton<IKeyManagementService, KeyManagementService>();
 
-            // Register all actor types
-            services.AddTransient<ICredentialVerifierActor>(sp => new CredentialVerifierActor(
-                Guid.NewGuid().ToString(),
-                sp.GetRequiredService<ICryptoService>(),
-                sp.GetRequiredService<IRevocationManagerActor>(),
-                sp.GetRequiredService<ILogger<CredentialVerifierActor>>(),
-                webAppVc
-            ));
-            services.AddTransient<IOIDCClientActor>(sp => new OIDCClientActor(
-                Guid.NewGuid().ToString(),
-                sp.GetRequiredService<IActorStateManager>(),
-                sp.GetRequiredService<IActorMessageBus>(),
-                sp.GetRequiredService<ILogger<OIDCClientActor>>() // Ensure logger is provided
-            ));
-            services.AddTransient<IVerifiableCredentialActor>(sp => new VerifiableCredentialActor(
-                Guid.NewGuid().ToString(),
-                sp.GetRequiredService<IActorMessageBus>(),
-                sp.GetRequiredService<ILogger<VerifiableCredentialActor>>()
-            ));
-            services.AddTransient<IVerifiableCredentialAsRootOfTrustActor>(sp => new VerifiableCredentialAsRootOfTrustActor(
-                Guid.NewGuid().ToString(),
-                sp.GetRequiredService<IActorMessageBus>(),
-                sp.GetRequiredService<ILogger<VerifiableCredentialAsRootOfTrustActor>>()
-            ));
-            services.AddTransient<ITrustFrameworkManagerActor>(sp => new TrustFrameworkManagerActor(
-                Guid.NewGuid().ToString(),
-                sp.GetRequiredService<IActorMessageBus>(),
-                sp.GetRequiredService<ILogger<TrustFrameworkManagerActor>>()
-            ));
-
-            services.AddTransient<IRevocationManagerActor>(sp => new RevocationManagerActor(
-                Guid.NewGuid().ToString(),
-                sp.GetRequiredService<IActorMessageBus>(),
-                sp.GetRequiredService<IActorStateManager>(),
-                sp.GetRequiredService<ILogger<RevocationManagerActor>>()
-            ));
-
-            // Register DecentralizedOIDCProvider
-            services.AddSingleton<DecentralizedOIDCProvider>();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -334,6 +324,11 @@ namespace Rebel.Alliance.Canary.Tests
             VerifiableCredentialAsRootOfTrustActor = serviceProvider.GetRequiredService<IVerifiableCredentialAsRootOfTrustActor>();
             TrustFrameworkManagerActor = serviceProvider.GetRequiredService<ITrustFrameworkManagerActor>();
             RevocationManagerActor = serviceProvider.GetRequiredService<IRevocationManagerActor>();
+
+
+            OidcProviderService.GenerateAndStorePrivateKeyAsync(webAppVc.ClientId).Wait();
+
+
         }
 
         public void Dispose()

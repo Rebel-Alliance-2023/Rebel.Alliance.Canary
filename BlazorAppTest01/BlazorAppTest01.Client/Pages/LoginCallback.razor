@@ -1,49 +1,76 @@
 ﻿@page "/authentication/login-callback"
+@namespace BlazorAppTest01.Client.Pages
+@using BlazorAppTest01.Client.Models
+@using System.Net.Http.Json
+@using Blazored.LocalStorage
 @inject NavigationManager NavigationManager
-@inject IHttpClientFactory HttpClientFactory
+@inject HttpClient HttpClient
 @inject ILogger<LoginCallback> Logger
+@inject ILocalStorageService LocalStorage
 
 @code {
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var code = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("code");
+        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var code = queryParams.Get("code");
+        var state = queryParams.Get("state");
 
-        if (!string.IsNullOrEmpty(code))
-        {
-            try
-            {
-                var redirectUri = NavigationManager.BaseUri + "authentication/login-callback";
-                var httpClient = HttpClientFactory.CreateClient("BlazorAppTest01.ServerAPI");
-                Logger.LogInformation($"Attempting to exchange code: {code}, redirectUri: {redirectUri}");
-
-                // Use an absolute URI here
-                var absoluteUri = new Uri(NavigationManager.BaseUri + $"api/auth/exchange?code={code}&redirectUri={Uri.EscapeDataString(redirectUri)}");
-                var response = await httpClient.GetFromJsonAsync<TokenResponse>(absoluteUri);
-
-                if (response != null)
-                {
-                    Logger.LogInformation("Token exchange successful");
-                    // Here you would typically store the tokens
-                    // For now, we'll just redirect to the home page
-                    NavigationManager.NavigateTo("/");
-                }
-                else
-                {
-                    Logger.LogError("Token exchange failed: response was null");
-                    NavigationManager.NavigateTo("/login?error=token_exchange_failed");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Token exchange failed");
-                NavigationManager.NavigateTo("/login?error=token_exchange_failed");
-            }
-        }
-        else
+        if (string.IsNullOrEmpty(code))
         {
             Logger.LogError("No authorization code received");
             NavigationManager.NavigateTo("/login?error=no_code");
+            return;
         }
+
+        if (string.IsNullOrEmpty(state) || !ValidateState(state))
+        {
+            Logger.LogError("Invalid state parameter");
+            NavigationManager.NavigateTo("/login?error=invalid_state");
+            return;
+        }
+
+        try
+        {
+            var redirectUri = NavigationManager.BaseUri + "authentication/login-callback";
+            var tokenResponse = await ExchangeCodeForTokenAsync(code, redirectUri);
+
+            await SetAuthenticationStateAsync(tokenResponse);
+            Logger.LogInformation("Token exchange successful");
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Token exchange failed");
+            NavigationManager.NavigateTo("/login?error=token_exchange_failed");
+        }
+    }
+
+    private async Task<TokenResponse> ExchangeCodeForTokenAsync(string code, string redirectUri)
+    {
+        var response = await HttpClient.GetFromJsonAsync<TokenResponse>(
+            $"api/auth/exchange-code?code={Uri.EscapeDataString(code)}&redirectUri={Uri.EscapeDataString(redirectUri)}");
+
+        if (response == null)
+        {
+            throw new Exception("Token exchange failed: response was null");
+        }
+
+        return response;
+    }
+
+    private async Task SetAuthenticationStateAsync(TokenResponse tokenResponse)
+    {
+        await LocalStorage.SetItemAsync("auth_token", tokenResponse.AccessToken);
+        await LocalStorage.SetItemAsync("id_token", tokenResponse.IdToken);
+
+        // You might want to trigger a state change in your authentication state provider here
+    }
+
+    private bool ValidateState(string state)
+    {
+        // Implement state validation logic
+        // For now, we'll just return true as a placeholder
+        return true;
     }
 }
