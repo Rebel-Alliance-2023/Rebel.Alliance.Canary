@@ -7,19 +7,12 @@ namespace Rebel.Alliance.Canary.OIDC.Models
     /// </summary>
     public class TokenResponse
     {
-        /// <summary>
-        /// The access token, which is used to access protected resources.
-        /// </summary>
-        public string AccessToken { get; set; }
-
-        /// <summary>
-        /// The ID token, which contains claims about the authentication of an end-user.
-        /// </summary>
         public string IdToken { get; set; }
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
+        public int ExpiresIn { get; set; }
+        
 
-        /// <summary>
-        /// The expiration time of the tokens.
-        /// </summary>
         public DateTime Expiration { get; set; }
 
         /// <summary>

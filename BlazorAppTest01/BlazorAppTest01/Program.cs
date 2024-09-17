@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using Rebel.Alliance.Canary.Security;
 using BlazorAppTest01;
+using System.Text.Json;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +55,16 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("openid");
     options.Scope.Add("profile");
     // Add any additional scopes you need
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
 });
 
 // Add cookie authentication
@@ -69,8 +82,12 @@ builder.Services.AddCanaryActorSystem(options =>
     options.WebAppVc = webAppVc;
 });
 
-builder.Services.AddHttpClient<TokenExchangeService>();
-builder.Services.AddControllers();
+//builder.Services.AddHttpClient<TokenExchangeService>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 var app = builder.Build();
 
@@ -106,19 +123,23 @@ app.MapRazorComponents<App>()
 
 app.MapGet("/connect/authorize", async (HttpContext context, DecentralizedOIDCProvider oidcService) =>
 {
-    var response = await oidcService.InitiateAuthenticationAsync(context.Request.Query["client_id"], context.Request.Query["redirect_uri"]);
+    var clientId = context.Request.Query["client_id"];
+    var redirectUri = context.Request.Query["redirect_uri"];
+    var state = context.Request.Query["state"];
+
+    var response = await oidcService.InitiateAuthenticationAsync(clientId, redirectUri, state);
     return Results.Redirect(response);
 });
 
-app.MapPost("/connect/token", async (HttpContext context, DecentralizedOIDCProvider oidcService) =>
-{
-    var form = await context.Request.ReadFormAsync();
-    var code = form["code"];
-    var clientId = form["client_id"];
-    var redirectUri = form["redirect_uri"];
+//app.MapPost("/connect/token", async (HttpContext context, DecentralizedOIDCProvider oidcService) =>
+//{
+//    var form = await context.Request.ReadFormAsync();
+//    var code = form["code"];
+//    var clientId = form["client_id"];
+//    var redirectUri = form["redirect_uri"];
 
-    var tokenResponse = await oidcService.ExchangeAuthorizationCodeAsync(clientId, code, redirectUri);
-    return Results.Json(tokenResponse);
-});
+//    var tokenResponse = await oidcService.ExchangeAuthorizationCodeAsync(clientId, code, redirectUri);
+//    return Results.Json(tokenResponse);
+//});
 
 app.Run();

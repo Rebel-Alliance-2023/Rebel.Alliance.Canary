@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Components.Authorization;
 using BlazorAppTest01.Client;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using Blazored.LocalStorage;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -21,12 +20,11 @@ builder.Services.AddHttpClient("BlazorAppTest01.ServerAPI", client =>
 })
 .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
-// Add Blazored LocalStorage
-builder.Services.AddBlazoredLocalStorage();
+//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
-    .CreateClient("BlazorAppTest01.ServerAPI"));
+
+
 
 // Add OIDC authentication
 builder.Services.AddOidcAuthentication(options =>

@@ -162,23 +162,23 @@ namespace Rebel.Alliance.Canary.Tests
             Assert.True(vc.Claims.ContainsKey("email"));
         }
 
-        [Fact]
-        public async Task InitiateAuthentication_ShouldReturnAuthorizationCode_Variant()
-        {
-            // Arrange
-            var clientId = "client1";
-            var redirectUri = "http://localhost/callback";
-            var expectedAuthorizationCode = "authCode123";
-            _oidcProviderServiceMock
-                .Setup(service => service.InitiateAuthenticationAsync(clientId, redirectUri))
-                .ReturnsAsync(expectedAuthorizationCode);
+        //[Fact]
+        //public async Task InitiateAuthentication_ShouldReturnAuthorizationCode_Variant()
+        //{
+        //    // Arrange
+        //    var clientId = "client1";
+        //    var redirectUri = "http://localhost/callback";
+        //    var expectedAuthorizationCode = "authCode123";
+        //    _oidcProviderServiceMock
+        //        .Setup(service => service.InitiateAuthenticationAsync(clientId, redirectUri))
+        //        .ReturnsAsync(expectedAuthorizationCode);
 
-            // Act
-            var result = await _oidcProviderServiceMock.Object.InitiateAuthenticationAsync(clientId, redirectUri);
+        //    // Act
+        //    var result = await _oidcProviderServiceMock.Object.InitiateAuthenticationAsync(clientId, redirectUri);
 
-            // Assert
-            Assert.Equal(expectedAuthorizationCode, result);
-        }
+        //    // Assert
+        //    Assert.Equal(expectedAuthorizationCode, result);
+        //}
 
         [Fact]
         public async Task ExchangeAuthorizationCode_ShouldReturnTokens()

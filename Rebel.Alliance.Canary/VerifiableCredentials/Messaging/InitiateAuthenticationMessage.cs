@@ -9,12 +9,14 @@ namespace Rebel.Alliance.Canary.VerifiableCredentials.Messaging
         // New properties to match the arguments expected
         public string ClientId { get; }
         public string RedirectUri { get; }
+        public string State { get; }
 
         // Constructor to accept required arguments
-        public InitiateAuthenticationMessage(string clientId, string redirectUri)
+        public InitiateAuthenticationMessage(string clientId, string redirectUri, string state)
         {
             ClientId = clientId;
             RedirectUri = redirectUri;
+            State = state;
         }
     }
 }

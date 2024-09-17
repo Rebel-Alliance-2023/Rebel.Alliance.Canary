@@ -12,13 +12,14 @@ namespace Rebel.Alliance.Canary.OIDC.Services
 {
     public interface IDecentralizedOIDCProviderService
     {
-        Task<AuthorizationResponse> InitiateAuthenticationAsync(AuthenticationRequest request);
+        //Task<AuthorizationResponse> InitiateAuthenticationAsync(AuthenticationRequest request);
+        Task<string> InitiateAuthenticationAsync(string clientId, string redirectUri, string state);
         Task<TokenResponse> ExchangeAuthorizationCodeAsync(TokenRequest request);
         Task<bool> ValidateTokenAsync(string token);
         Task RevokeCredentialAsync(string credentialId);
 
         Task<OidcResponse> ExchangeAuthorizationCodeAsync(string clientId, string code, string redirectUri);
-        Task<string> InitiateAuthenticationAsync(string clientId, string redirectUri);
+        
         Task GenerateAndStorePrivateKeyAsync(string clientId);
     }
 
@@ -38,19 +39,28 @@ namespace Rebel.Alliance.Canary.OIDC.Services
             _keyStore = keyStore;
         }
 
-        public async Task<string> InitiateAuthenticationAsync(string clientId, string redirectUri)
+        //public async Task<string> InitiateAuthenticationAsync(string clientId, string redirectUri)
+        //{
+        //    // Create an InitiateAuthenticationMessage
+        //    var message = new InitiateAuthenticationMessage(clientId, redirectUri);
+
+        //    // Send the message to the OIDCClientActor
+        //    var authorizationCode = await _actorMessageBus.SendMessageAsync<OIDCClientActor, string>(clientId, message);
+
+        //    // Construct the redirect URL with the authorization code
+        //    var redirectUrl = $"{redirectUri}?code={authorizationCode}";
+
+        //    return redirectUrl;
+        //}
+
+        public async Task<string> InitiateAuthenticationAsync(string clientId, string redirectUri, string state)
         {
-            // Create an InitiateAuthenticationMessage
-            var message = new InitiateAuthenticationMessage(clientId, redirectUri);
-
-            // Send the message to the OIDCClientActor
+            var message = new InitiateAuthenticationMessage(clientId, redirectUri, state);
             var authorizationCode = await _actorMessageBus.SendMessageAsync<OIDCClientActor, string>(clientId, message);
-
-            // Construct the redirect URL with the authorization code
-            var redirectUrl = $"{redirectUri}?code={authorizationCode}";
-
+            var redirectUrl = $"{redirectUri}?code={authorizationCode}&state={state}";
             return redirectUrl;
         }
+
 
         public async Task<OidcResponse> ExchangeAuthorizationCodeAsync(string clientId, string code, string redirectUri)
         {
@@ -58,14 +68,15 @@ namespace Rebel.Alliance.Canary.OIDC.Services
             return await _actorMessageBus.SendMessageAsync<OIDCClientActor, OidcResponse>(clientId, message);
         }
 
-        public async Task<AuthorizationResponse> InitiateAuthenticationAsync(AuthenticationRequest request)
-        {
-            // Use _actorMessageBus to send a message to OIDCClientActor
-            var response = await _actorMessageBus.SendMessageAsync<OIDCClientActor, AuthorizationResponse>(
-                "OIDCClient",
-                new InitiateAuthenticationMessage(request.ClientId, request.RedirectUri));
-            return response;
-        }
+        //public async Task<AuthorizationResponse> InitiateAuthenticationAsync(AuthenticationRequest request)
+        //{
+        //    // Use _actorMessageBus to send a message to OIDCClientActor
+        //    var response = await _actorMessageBus.SendMessageAsync<OIDCClientActor, AuthorizationResponse>(
+        //        "OIDCClient",
+        //        new InitiateAuthenticationMessage(request.ClientId, request.RedirectUri, request.state));
+        //    return response;
+        //}
+
 
         public async Task<TokenResponse> ExchangeAuthorizationCodeAsync(TokenRequest request)
         {

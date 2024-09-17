@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text;
 
 public class TokenExchangeService
 {
@@ -16,22 +19,29 @@ public class TokenExchangeService
 
     public async Task<string> ExchangeCodeForTokenAsync(string code, string redirectUri)
     {
-        var tokenEndpoint = _configuration["Oidc:TokenEndpoint"];
-        var clientId = _configuration["Oidc:ClientId"];
+        var tokenEndpoint = _configuration["WebAppVerifiableCredential:TokenEndpoint"];
+        var clientId = _configuration["WebAppVerifiableCredential:ClientId"];
+        var clientSecret = _configuration["WebAppVerifiableCredential:ClientSecret"];
 
         _logger.LogInformation($"Exchanging code for token. Endpoint: {tokenEndpoint}, ClientId: {clientId}, RedirectUri: {redirectUri}");
 
-        var tokenRequest = new Dictionary<string, string>
+        var tokenRequest = new
         {
-            {"grant_type", "authorization_code"},
-            {"code", code},
-            {"redirect_uri", redirectUri},
-            {"client_id", clientId}
+            grant_type = "authorization_code",
+            code,
+            redirect_uri = redirectUri,
+            client_id = clientId,
+            client_secret = clientSecret
         };
 
         try
         {
-            var response = await _httpClient.PostAsync(tokenEndpoint, new FormUrlEncodedContent(tokenRequest));
+            var jsonContent = new StringContent(
+                JsonSerializer.Serialize(tokenRequest),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(tokenEndpoint, jsonContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -51,5 +61,15 @@ public class TokenExchangeService
             _logger.LogError(ex, "Exception occurred during token exchange");
             throw;
         }
+    }
+
+
+    public class TokenResponse
+    {
+        public string access_token { get; set; }
+        public string token_type { get; set; }
+        public int expires_in { get; set; }
+        public string refresh_token { get; set; }
+        public string id_token { get; set; }
     }
 }
