@@ -32,11 +32,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 // Register HttpClientFactory
-builder.Services.AddHttpClient("BlazorAppTest01.ServerAPI", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["WebAppVerifiableCredential:Authority"]);
-    // Add any default headers or settings here
-});
+builder.Services.AddHttpClient();
 
 // Configure authentication
 builder.Services.AddAuthentication(options =>

@@ -1,7 +1,9 @@
 ﻿@page "/authentication/login-callback"
+@using System.Net.Http.Json
 @inject NavigationManager NavigationManager
 @inject IHttpClientFactory HttpClientFactory
 @inject ILogger<LoginCallback> Logger
+@inject HttpClient HttpClient
 
 @if (isLoading)
 {
@@ -79,15 +81,9 @@
     {
         try
         {
-            var client = HttpClientFactory.CreateClient("BlazorAppTest01.ServerAPI");
+            using var client = new HttpClient { BaseAddress = new Uri(NavigationManager.BaseUri) };
 
             Logger.LogInformation($"Client BaseAddress: {client.BaseAddress}");
-
-            if (client.BaseAddress == null)
-            {
-                client.BaseAddress = new Uri(NavigationManager.BaseUri);
-                Logger.LogInformation($"Setting BaseAddress to: {client.BaseAddress}");
-            }
 
             var requestUri = new Uri(client.BaseAddress, "api/auth/token");
             Logger.LogInformation($"Full request URI: {requestUri}");
@@ -119,6 +115,7 @@
             throw;
         }
     }
+
 
     private bool ValidateState(string state)
     {
