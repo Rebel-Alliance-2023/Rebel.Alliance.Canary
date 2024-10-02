@@ -1,0 +1,134 @@
+﻿@page "/authentication/login-callback"
+@using System.Net.Http.Json
+@inject NavigationManager NavigationManager
+@inject IHttpClientFactory HttpClientFactory
+@inject ILogger<LoginCallback> Logger
+@inject HttpClient HttpClient
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+
+@code {
+    private bool isLoading = true;
+    private bool shouldNavigate = false;
+    private string query = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Any synchronous initialization if needed
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitializeAuthenticationAsync();
+        }
+        else if (shouldNavigate)
+        {
+            NavigationManager.NavigateTo($"/{query}");
+        }
+    }
+
+    private async Task InitializeAuthenticationAsync()
+    {
+        try
+        {
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var code = queryParams.Get("code");
+            var state = queryParams.Get("state");
+
+            if (string.IsNullOrEmpty(code))
+            {
+                Logger.LogError("No authorization code received");
+                shouldNavigate = true;
+                query = "?error=no_code";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(state) || !ValidateState(state))
+            {
+                Logger.LogError("Invalid state parameter");
+                shouldNavigate = true;
+                query = "?error=invalid_state";
+                return;
+            }
+
+            var redirectUri = NavigationManager.BaseUri + "authentication/login-callback";
+            var tokenResponse = await ExchangeCodeForTokenAsync(code, redirectUri);
+
+            Logger.LogInformation($"Token exchange successful. Access Token: {tokenResponse.access_token.Substring(0, 10)}..., Token Type: {tokenResponse.token_type}, Expires In: {tokenResponse.expires_in}");
+            query = "?verified=true";
+            shouldNavigate = true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Token exchange failed");
+            query = "?error=token_exchange_failed";
+            shouldNavigate = true;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<TokenResponse> ExchangeCodeForTokenAsync(string code, string redirectUri)
+    {
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri(NavigationManager.BaseUri) };
+
+            Logger.LogInformation($"Client BaseAddress: {client.BaseAddress}");
+
+            var requestUri = new Uri(client.BaseAddress, "api/auth/token");
+            Logger.LogInformation($"Full request URI: {requestUri}");
+
+            var response = await client.PostAsJsonAsync(requestUri, new
+            {
+                grant_type = "authorization_code",
+                code,
+                redirect_uri = redirectUri,
+                client_id = "blazor-test-client",
+                client_secret = "blazor-test-client-secret"
+            });
+
+            Logger.LogInformation($"Response StatusCode: {response.StatusCode}");
+
+            response.EnsureSuccessStatusCode();
+            var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
+
+            if (tokenResponse == null)
+            {
+                throw new Exception("Token exchange failed: response was null");
+            }
+
+            return tokenResponse;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, $"Token exchange failed. Code: {code}, RedirectUri: {redirectUri}");
+            throw;
+        }
+    }
+
+
+    private bool ValidateState(string state)
+    {
+        // TODO: Implement proper state validation
+        // This could involve checking against a stored state in local storage or a state management service
+        return !string.IsNullOrEmpty(state);
+    }
+
+    public class TokenResponse
+    {
+        public string access_token { get; set; }
+        public string token_type { get; set; }
+        public int expires_in { get; set; }
+        public string id_token { get; set; }
+    }
+}

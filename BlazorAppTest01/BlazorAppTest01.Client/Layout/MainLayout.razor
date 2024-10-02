@@ -1,0 +1,96 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+
+<div class="page">
+    <div class="sidebar" style="visibility:@visible">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+@code {
+    private string visible = "hidden";
+    private bool _isPrerendering;
+    private bool verified;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!_isPrerendering)
+        {
+            _isPrerendering = true;
+
+            var queryString = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query;
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var code = queryParams.Get("code");
+            var state = queryParams.Get("state");
+            var verified = queryParams.Get("verified");
+            
+
+            if (!string.IsNullOrEmpty(queryString))
+            {
+                if (verified == "true")
+                {
+                    visible = "visible";
+                }
+
+                return;
+            }
+
+            await LoginWithOidc();
+        }
+    }
+
+    private async Task LoginWithOidc()
+    {
+        var webAppVc = Configuration.GetSection("WebAppVerifiableCredential");
+
+        var authorizationEndpoint = $"{webAppVc["Authority"]}/connect/authorize";
+
+        var clientId = webAppVc["ClientId"];
+
+        var redirectUri = NavigationManager.BaseUri + "authentication/login-callback";
+
+        var scope = "openid profile";
+
+        var state = Guid.NewGuid().ToString();
+
+        var nonce = Guid.NewGuid().ToString();
+
+        var authorizationRequest = $"{authorizationEndpoint}?" +
+
+            $"client_id={Uri.EscapeDataString(clientId)}&" +
+
+            $"redirect_uri={Uri.EscapeDataString(redirectUri)}&" +
+
+            $"response_type=code&" +
+
+            $"scope={Uri.EscapeDataString(scope)}&" +
+
+            $"state={Uri.EscapeDataString(state)}&" +
+
+            $"nonce={Uri.EscapeDataString(nonce)}";
+
+        NavigationManager.NavigateTo(authorizationRequest, forceLoad: true);
+
+    }
+
+
+
+}

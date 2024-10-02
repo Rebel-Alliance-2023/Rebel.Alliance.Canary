@@ -9,9 +9,31 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCanary", "BlazorCanar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorCanary.Client", "BlazorCanary\BlazorCanary.Client\BlazorCanary.Client.csproj", "{5B904B7E-395B-459C-B2C8-3D5239D17E11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rebel.Alliance.Canary.AppHost", "Rebel.Alliance.Canary.AppHost\Rebel.Alliance.Canary.AppHost.csproj", "{531F023C-CB2B-45C5-B592-2475B7818DD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.AppHost", "Rebel.Alliance.Canary.AppHost\Rebel.Alliance.Canary.AppHost.csproj", "{531F023C-CB2B-45C5-B592-2475B7818DD4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.ServiceDefaults", "Rebel.Alliance.Canary.ServiceDefaults\Rebel.Alliance.Canary.ServiceDefaults.csproj", "{851AAB5A-7982-491F-B558-390C6F0A361A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorAppTest01", "BlazorAppTest01\BlazorAppTest01\BlazorAppTest01.csproj", "{9F0A9B51-1971-4E63-B574-B02C9DF9DB31}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorAppTest01.Client", "BlazorAppTest01\BlazorAppTest01.Client\BlazorAppTest01.Client.csproj", "{4B477693-EE0B-4D79-8BFB-BE6FE79B8401}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BlazorTest", "BlazorTest", "{34A25879-9E6A-4223-805F-9BD71AD45732}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BlazorCanary", "BlazorCanary", "{1548B2F1-03F9-4463-A0E7-0032F6E29456}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{8AA11741-1FB9-4B2D-A8B6-9D2528F7FE18}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Canary", "Canary", "{36A513CF-C0B9-46B8-BC8C-2D791488D0F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.InMemoryActor.Tests", "Rebel.Alliance.Canary.Test\Rebel.Alliance.Canary.InMemoryActor.Tests.csproj", "{11A68871-1A50-4668-8ADA-02A3B52255F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.InMemoryActorFramework", "Rebel.Alliance.Canary.InMemoryActorFramework\Rebel.Alliance.Canary.InMemoryActorFramework.csproj", "{E8E52F3A-56D5-435A-B237-D24657CA76FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InMemoryActorFramework", "InMemoryActorFramework", "{0764C17A-750A-4E82-A1C3-9C59EFFBA628}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rebel.Alliance.Canary.Verfiable.Credentials", "Rebel.Alliance.Canary.Verfiable.Credentials\Rebel.Alliance.Canary.Verfiable.Credentials\Rebel.Alliance.Canary.Verfiable.Credentials.csproj", "{B6E8CC5B-6411-4CEE-B180-0028AD6B0E89}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Verifiable.Credentials", "Verifiable.Credentials", "{416DAF3D-2AB0-428D-BB0C-A2BA62462442}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,9 +61,41 @@ Global
 		{851AAB5A-7982-491F-B558-390C6F0A361A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{851AAB5A-7982-491F-B558-390C6F0A361A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{851AAB5A-7982-491F-B558-390C6F0A361A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F0A9B51-1971-4E63-B574-B02C9DF9DB31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F0A9B51-1971-4E63-B574-B02C9DF9DB31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F0A9B51-1971-4E63-B574-B02C9DF9DB31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F0A9B51-1971-4E63-B574-B02C9DF9DB31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B477693-EE0B-4D79-8BFB-BE6FE79B8401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B477693-EE0B-4D79-8BFB-BE6FE79B8401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B477693-EE0B-4D79-8BFB-BE6FE79B8401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B477693-EE0B-4D79-8BFB-BE6FE79B8401}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A68871-1A50-4668-8ADA-02A3B52255F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A68871-1A50-4668-8ADA-02A3B52255F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A68871-1A50-4668-8ADA-02A3B52255F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A68871-1A50-4668-8ADA-02A3B52255F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6E8CC5B-6411-4CEE-B180-0028AD6B0E89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6E8CC5B-6411-4CEE-B180-0028AD6B0E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6E8CC5B-6411-4CEE-B180-0028AD6B0E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6E8CC5B-6411-4CEE-B180-0028AD6B0E89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E0B5E2AD-3A0B-40DB-A915-894566A3D087} = {36A513CF-C0B9-46B8-BC8C-2D791488D0F0}
+		{8E0C38CE-813C-45C4-8690-4C39B3462816} = {1548B2F1-03F9-4463-A0E7-0032F6E29456}
+		{5B904B7E-395B-459C-B2C8-3D5239D17E11} = {1548B2F1-03F9-4463-A0E7-0032F6E29456}
+		{531F023C-CB2B-45C5-B592-2475B7818DD4} = {8AA11741-1FB9-4B2D-A8B6-9D2528F7FE18}
+		{851AAB5A-7982-491F-B558-390C6F0A361A} = {8AA11741-1FB9-4B2D-A8B6-9D2528F7FE18}
+		{9F0A9B51-1971-4E63-B574-B02C9DF9DB31} = {34A25879-9E6A-4223-805F-9BD71AD45732}
+		{4B477693-EE0B-4D79-8BFB-BE6FE79B8401} = {34A25879-9E6A-4223-805F-9BD71AD45732}
+		{11A68871-1A50-4668-8ADA-02A3B52255F1} = {0764C17A-750A-4E82-A1C3-9C59EFFBA628}
+		{E8E52F3A-56D5-435A-B237-D24657CA76FB} = {0764C17A-750A-4E82-A1C3-9C59EFFBA628}
+		{B6E8CC5B-6411-4CEE-B180-0028AD6B0E89} = {416DAF3D-2AB0-428D-BB0C-A2BA62462442}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {08BE26BE-C599-45EA-A6B4-EB6F6D4D53E2}
