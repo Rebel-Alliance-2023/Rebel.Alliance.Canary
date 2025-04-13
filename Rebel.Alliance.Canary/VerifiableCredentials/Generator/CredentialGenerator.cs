@@ -35,6 +35,5 @@ namespace Rebel.Alliance.Canary.VerifiableCredentials.Generator
             };
         }
 
-        // Other methods as needed
     }
 }

@@ -1,0 +1,22 @@
+MainLayout.razor
+ OnInitializedAsync()
+   LoginWithOidc()
+     NavigationManager.NavigateTo(authorizationRequest, forceLoad: true);
+___
+LoginCallback.razor
+  OnAfterRenderAsync()
+  InitializeAuthenticationAsync()
+  ExchangeCodeForTokenAsync()
+              var response = await client.PostAsJsonAsync(requestUri, new
+            {
+                grant_type = "authorization_code",
+                code,
+                redirect_uri = redirectUri,
+                client_id = "blazor-test-client",
+                client_secret = "blazor-test-client-secret"
+            });
+___
+AuthController.cs
+  Token([FromBody] TokenRequest request)
+    GenerateTokenResponse(request);
+      GenerateJwtToken()
