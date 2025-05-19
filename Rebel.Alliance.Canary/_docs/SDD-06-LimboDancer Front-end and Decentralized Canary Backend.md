@@ -40,6 +40,11 @@ Aries --> Indy : anchors DIDs & schemas
 @enduml
 ```
 
+---
+
+
+---
+
 ## 2. System Overview
 
 ### 2.1 Core Business Purpose
@@ -80,6 +85,11 @@ Blazor --> iFrame: Update UI
 iFrame --> Client: postMessage with result
 @enduml
 ```
+
+---
+
+
+---
 
 ## 3. Credential Management Architecture
 
@@ -150,6 +160,12 @@ iFrame -> Client: window.parent.postMessage(result)
 Client -> Client: Handle credential result
 @enduml
 ```
+
+
+---
+
+
+---
 
 ## 4. Implementation Details
 
@@ -317,6 +333,12 @@ ZKP --> Func: Return packaged proof
 @enduml
 ```
 
+
+---
+
+
+---
+
 ### 5.2 Aries Agent Integration
 
 ```csharp
@@ -365,6 +387,13 @@ public class AriesService
     }
 }
 ```
+
+
+---
+
+
+---
+
 
 ## 6. Security Architecture
 
@@ -423,6 +452,12 @@ Signing --> KeyVault : Uses HSM for sensitive operations
 @enduml
 ```
 
+
+---
+
+
+---
+
 ## 7. Deployment Architecture
 
 ```plantuml
@@ -468,6 +503,12 @@ Aries --> Indy
 @enduml
 ```
 
+
+---
+
+
+---
+
 ## 8. Credential Verification Flow
 
 ```plantuml
@@ -500,6 +541,12 @@ iframe -> Client: postMessage(verification result)
 Client -> User: Display verification outcome
 @enduml
 ```
+
+
+---
+
+
+---
 
 ## 9. Cost Analysis
 
